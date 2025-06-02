@@ -1,0 +1,19 @@
+{
+  "lsp": {
+    "rust-analyzer": {
+      "initialization_options": {
+        "rust": {
+          "analyzerTargetDir": true
+        },
+        "procMacro": {
+          "ignored": {
+            "bevy_simple_subsecond_macros": ["hot"]
+          }
+        },
+        "diagnostics": {
+          "disabled": ["proc-macro-disabled"]
+        }
+      }
+    }
+  }
+}
