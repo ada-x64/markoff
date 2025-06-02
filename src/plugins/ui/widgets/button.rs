@@ -1,75 +1,63 @@
-use bevy::{color::palettes::css::RED, prelude::*};
+use crate::theme::button::*;
+use bevy::prelude::*;
+use bevy_simple_subsecond_system::hot;
+use std::borrow::Cow;
 
-const NORMAL_BUTTON: Color = Color::srgb(0.15, 0.15, 0.15);
-const HOVERED_BUTTON: Color = Color::srgb(0.25, 0.25, 0.25);
-const PRESSED_BUTTON: Color = Color::srgb(0.35, 0.75, 0.35);
-pub fn button() -> impl Bundle + use<> {
+pub fn button(name: impl Into<Cow<'static, str>>, text: impl ToString) -> impl Bundle {
     (
-        Node {
-            width: Val::Percent(100.0),
-            height: Val::Percent(100.0),
-            align_items: AlignItems::Center,
-            justify_content: JustifyContent::Center,
-            ..default()
-        },
-        children![(
-            Button,
-            Node {
-                width: Val::Px(150.0),
-                height: Val::Px(65.0),
-                border: UiRect::all(Val::Px(5.0)),
-                // horizontally center child text
-                justify_content: JustifyContent::Center,
-                // vertically center child text
-                align_items: AlignItems::Center,
-                ..default()
-            },
-            BorderColor(Color::BLACK),
-            BorderRadius::MAX,
-            BackgroundColor(NORMAL_BUTTON),
-            children![(
-                Text::new("Button"),
-                TextFont {
-                    font_size: 33.0,
-                    ..default()
-                },
-                TextColor(Color::srgb(0.9, 0.9, 0.9)),
-                TextShadow::default(),
-            )]
-        )],
+        Name::new(name),
+        Button,
+        ButtonStyleBundle::unfocused(),
+        children![ButtonTextBundle::unfocused(text)],
     )
 }
 
-pub fn button_system(
-    mut interaction_query: Query<
+pub fn update(
+    mut style_q: Query<
         (
             &Interaction,
-            &mut BackgroundColor,
             &mut BorderColor,
+            &mut BorderRadius,
+            &mut BackgroundColor,
             &Children,
+            &mut Node,
         ),
-        (Changed<Interaction>, With<Button>),
+        (Changed<Interaction>, With<ButtonStyle>),
     >,
-    mut text_query: Query<&mut Text>,
+    mut text_q: Query<(&Text, &mut TextFont, &mut TextColor, &mut TextShadow), With<ButtonText>>,
 ) {
-    for (interaction, mut color, mut border_color, children) in &mut interaction_query {
-        let mut text = text_query.get_mut(children[0]).unwrap();
-        match *interaction {
-            Interaction::Pressed => {
-                **text = "Press".to_string();
-                *color = PRESSED_BUTTON.into();
-                border_color.0 = RED.into();
-            }
-            Interaction::Hovered => {
-                **text = "Hover".to_string();
-                *color = HOVERED_BUTTON.into();
-                border_color.0 = Color::WHITE;
-            }
-            Interaction::None => {
-                **text = "Button".to_string();
-                *color = NORMAL_BUTTON.into();
-                border_color.0 = Color::BLACK;
-            }
-        }
+    info_once!("Update!");
+    for (
+        interaction,
+        mut border_color,
+        mut border_radius,
+        mut background_color,
+        children,
+        mut node,
+    ) in &mut style_q
+    {
+        let child = children.first().unwrap();
+        let (text, mut font, mut text_color, mut text_shadow) = text_q.get_mut(*child).unwrap();
+        let (style, text_style) = match interaction {
+            Interaction::None => (
+                ButtonStyleBundle::unfocused(),
+                ButtonTextBundle::unfocused(text.to_string()),
+            ),
+            Interaction::Pressed => (
+                ButtonStyleBundle::pressed(),
+                ButtonTextBundle::pressed(text.to_string()),
+            ),
+            Interaction::Hovered => (
+                ButtonStyleBundle::hovered(),
+                ButtonTextBundle::hovered(text.to_string()),
+            ),
+        };
+        *border_color = style.border_color;
+        *border_radius = style.radius;
+        *background_color = style.background;
+        *node = style.node;
+        *font = text_style.font;
+        *text_color = text_style.color;
+        *text_shadow = text_style.shadow;
     }
 }

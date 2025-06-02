@@ -1,15 +1,17 @@
 use bevy::prelude::*;
 pub mod screens;
+pub mod theme;
 pub mod widgets;
 
 use screens::*;
+use theme::*;
 use widgets::*;
 
 pub struct UiPlugin;
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
         let _ = {
-            app.add_plugins((WidgetsPlugin, ScreensPlugin))
+            app.add_plugins((WidgetsPlugin, ScreensPlugin, ThemePlugin))
                 .add_systems(Startup, spawn_camera)
         };
     }
