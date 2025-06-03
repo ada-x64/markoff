@@ -1,6 +1,6 @@
 use bevy::{color::palettes::tailwind, prelude::*};
 
-use crate::theme::text::TextBundle;
+use crate::theme::text::TextBundleBase;
 
 /// Marker component
 #[derive(Debug, Clone, Copy, Component)]
@@ -60,4 +60,4 @@ impl ButtonStyleBundle {
 /// Marker component.
 #[derive(Component, Default, Debug, Clone, Copy)]
 pub struct ButtonText;
-pub type ButtonTextBundle = TextBundle<ButtonText>;
+pub type ButtonTextBundle = TextBundleBase<ButtonText>;

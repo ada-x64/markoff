@@ -1,15 +1,24 @@
 use bevy::{color::palettes::tailwind, prelude::*};
 
+#[derive(Component, Debug, Default, Clone, Copy)]
+pub struct TextBundleMarker;
+
 /// Button text styles.
 #[derive(Bundle, Clone, Debug)]
-pub struct TextBundle<M: Component + Default> {
+pub struct TextBundleBase<M: Component + Default> {
     pub text: Text,
     pub font: TextFont,
     pub color: TextColor,
     pub shadow: TextShadow,
-    marker: M,
+    pub marker: M,
 }
-impl<M: Component + Default> TextBundle<M> {
+pub type TextBundle = TextBundleBase<TextBundleMarker>;
+impl<M: Component + Default> TextBundleBase<M> {
+    #[doc(alias = "unfocused")]
+    pub fn new(text: impl ToString) -> Self {
+        Self::unfocused(text)
+    }
+    #[doc(alias = "new")]
     pub fn unfocused(text: impl ToString) -> Self {
         Self {
             text: Text(text.to_string()),
@@ -33,5 +42,10 @@ impl<M: Component + Default> TextBundle<M> {
             color: TextColor(tailwind::SLATE_100.into()),
             ..Self::unfocused(text)
         }
+    }
+    pub fn title(text: impl ToString) -> Self {
+        let mut this = Self::new(text);
+        this.font.font_size = 64.;
+        this
     }
 }

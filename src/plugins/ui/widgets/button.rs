@@ -1,12 +1,12 @@
 use crate::theme::button::*;
 use bevy::prelude::*;
-use bevy_simple_subsecond_system::hot;
 use std::borrow::Cow;
 
 pub fn button(name: impl Into<Cow<'static, str>>, text: impl ToString) -> impl Bundle {
     (
         Name::new(name),
         Button,
+        Pickable::default(),
         ButtonStyleBundle::unfocused(),
         children![ButtonTextBundle::unfocused(text)],
     )
@@ -26,7 +26,6 @@ pub fn update(
     >,
     mut text_q: Query<(&Text, &mut TextFont, &mut TextColor, &mut TextShadow), With<ButtonText>>,
 ) {
-    info_once!("Update!");
     for (
         interaction,
         mut border_color,

@@ -1,17 +1,20 @@
 use bevy::prelude::*;
+use strum::{EnumIter, IntoEnumIterator};
 
 pub mod main_menu;
+pub mod sandbox;
 
 #[derive(Component, Copy, Clone, Debug, Default)]
 pub struct ScreenMarker;
 
-#[derive(States, Copy, Clone, Default, Hash, PartialEq, Eq, Debug)]
+#[derive(States, Copy, Clone, Default, Hash, PartialEq, Eq, Debug, EnumIter)]
 pub enum Screen {
     #[default]
     MainMenu,
     GameSettings,
     MainLoop,
     Results,
+    Sandbox,
 }
 
 #[macro_export]
@@ -28,11 +31,17 @@ impl Plugin for ScreensPlugin {
     fn build(&self, app: &mut App) {
         let _ = {
             app.init_state::<Screen>()
-                .add_systems(
-                    Update,
-                    (main_menu::update).run_if(in_state(Screen::MainMenu)),
-                )
                 .add_systems(OnEnter(Screen::MainMenu), main_menu::init)
+                .add_systems(OnEnter(Screen::Sandbox), sandbox::init)
         };
+        for screen in Screen::iter() {
+            app.add_systems(OnExit(screen), cleanup_screen);
+        }
+    }
+}
+
+fn cleanup_screen(screens: Query<Entity, With<ScreenMarker>>, mut commands: Commands) {
+    for screen in screens {
+        commands.get_entity(screen).unwrap().despawn();
     }
 }
