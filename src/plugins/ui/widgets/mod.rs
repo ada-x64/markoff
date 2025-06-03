@@ -1,6 +1,10 @@
 use bevy::prelude::*;
 pub mod button;
 pub use button::*;
+pub mod grid;
+pub use grid::*;
+pub mod text;
+pub use text::*;
 
 pub struct WidgetsPlugin;
 impl Plugin for WidgetsPlugin {

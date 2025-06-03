@@ -1,9 +1,5 @@
 use bevy::{color::palettes::tailwind, prelude::*};
 
-#[derive(Component, Debug, Default, Clone, Copy)]
-pub struct TextBundleMarker;
-
-/// Button text styles.
 #[derive(Bundle, Clone, Debug)]
 pub struct TextBundleBase<M: Component + Default> {
     pub text: Text,
@@ -12,7 +8,6 @@ pub struct TextBundleBase<M: Component + Default> {
     pub shadow: TextShadow,
     pub marker: M,
 }
-pub type TextBundle = TextBundleBase<TextBundleMarker>;
 impl<M: Component + Default> TextBundleBase<M> {
     #[doc(alias = "unfocused")]
     pub fn new(text: impl ToString) -> Self {

@@ -31,6 +31,8 @@ impl Default for ButtonStyleBundle {
                 border: UiRect::all(Val::Px(2.)),
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
+                margin: UiRect::top(Val::Px(4.)).with_bottom(Val::Px(4.)),
+                padding: UiRect::all(Val::Px(4.)),
                 ..default()
             },
         }
@@ -56,8 +58,3 @@ impl ButtonStyleBundle {
         }
     }
 }
-
-/// Marker component.
-#[derive(Component, Default, Debug, Clone, Copy)]
-pub struct ButtonText;
-pub type ButtonTextBundle = TextBundleBase<ButtonText>;

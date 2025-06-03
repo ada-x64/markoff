@@ -3,8 +3,7 @@ use bevy_simple_subsecond_system::hot;
 
 use crate::{
     screens::{Screen, ScreenMarker},
-    theme::text::TextBundle,
-    widgets::button,
+    widgets::*,
 };
 
 #[hot]
@@ -23,8 +22,8 @@ pub fn init(mut commands: Commands) {
             },
             // children![title, buttons_wrapper],
         ))
-        .with_children(|spawner| {
-            spawner.spawn((
+        .with_children(|layout| {
+            layout.spawn((
                 Node {
                     height: Val::Percent(33.),
                     ..Default::default()
@@ -32,18 +31,20 @@ pub fn init(mut commands: Commands) {
                 children![TextBundle::title("MARKOFF!")],
             ));
             let buttons_wrapper = (Node {
+                display: Display::Flex,
+                flex_direction: FlexDirection::Column,
                 width: Val::Percent(33.),
                 height: Val::Percent(33.),
                 margin: UiRect::top(Val::Px(32.)).with_bottom(Val::Px(32.)),
                 ..Default::default()
             },);
-            spawner.spawn(buttons_wrapper).with_children(|spawner| {
-                spawner.spawn(button("play", "New Game")).observe(on_click);
-                spawner
+            layout.spawn(buttons_wrapper).with_children(|btnwrap| {
+                btnwrap.spawn(button("play", "New Game")).observe(on_click);
+                btnwrap
                     .spawn(button("sandbox", "Sandbox"))
                     .observe(on_click);
                 #[cfg(not(target_arch = "wasm32"))]
-                spawner.spawn(button("quit", "Quit")).observe(on_click);
+                btnwrap.spawn(button("quit", "Quit")).observe(on_click);
             });
         });
 }

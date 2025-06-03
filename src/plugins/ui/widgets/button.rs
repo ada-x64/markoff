@@ -1,4 +1,7 @@
-use crate::theme::button::*;
+use crate::{
+    theme::button::*,
+    widgets::{ButtonText, ButtonTextBundle},
+};
 use bevy::prelude::*;
 use std::borrow::Cow;
 

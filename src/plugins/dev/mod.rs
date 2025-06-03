@@ -13,7 +13,7 @@ impl Plugin for DevPlugin {
 }
 
 fn watch_key_presses(
-    // mut commands: Commands,
+    mut commands: Commands,
     input: Res<ButtonInput<KeyCode>>,
     mut screen: ResMut<NextState<Screen>>,
 ) {
@@ -26,5 +26,8 @@ fn watch_key_presses(
             screen.set(Screen::MainMenu);
         }
         // other conditions
+    }
+    if input.just_pressed(KeyCode::Escape) {
+        commands.send_event(AppExit::Success);
     }
 }
