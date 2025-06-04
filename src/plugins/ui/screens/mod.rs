@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 use strum::{EnumIter, IntoEnumIterator};
 
+pub mod main_loop;
 pub mod main_menu;
 pub mod sandbox;
 
@@ -9,9 +10,9 @@ pub struct ScreenMarker;
 
 #[derive(States, Copy, Clone, Default, Hash, PartialEq, Eq, Debug, EnumIter)]
 pub enum Screen {
-    #[default]
     MainMenu,
     GameSettings,
+    #[default]
     MainLoop,
     Results,
     Sandbox,
@@ -33,6 +34,7 @@ impl Plugin for ScreensPlugin {
             app.init_state::<Screen>()
                 .add_systems(OnEnter(Screen::MainMenu), main_menu::init)
                 .add_systems(OnEnter(Screen::Sandbox), sandbox::init)
+                .add_systems(OnEnter(Screen::MainLoop), main_loop::init)
         };
         for screen in Screen::iter() {
             app.add_systems(OnExit(screen), cleanup_screen);

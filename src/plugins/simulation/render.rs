@@ -6,19 +6,16 @@
 use bevy::{
     prelude::*,
     render::{
-        Render, RenderApp,
-        extract_resource::{ExtractResource, ExtractResourcePlugin},
+        extract_resource::ExtractResource,
         render_graph::{self, RenderLabel},
         render_resource::{
-            CachedPipelineState, ComputePassDescriptor, Pipeline, PipelineCache, PipelineCacheError,
+            CachedPipelineState, ComputePassDescriptor, PipelineCache, PipelineCacheError,
         },
         renderer::RenderContext,
     },
 };
 
-use crate::{
-    SHADER_ASSET_PATH, SimulationBindGroups, SimulationPipeline, simulation::prepare_bind_group,
-};
+use crate::{SHADER_ASSET_PATH, SimulationBindGroups, SimulationPipeline};
 
 pub const DISPLAY_FACTOR: u32 = 4;
 pub const SIMULATION_SIZE: (u32, u32) = (512 / DISPLAY_FACTOR, 512 / DISPLAY_FACTOR);
@@ -34,14 +31,14 @@ pub struct SimulationImages {
 #[derive(Debug, Hash, PartialEq, Eq, Clone, RenderLabel)]
 pub struct SimulationLabel;
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub enum SimulationState {
     #[default]
     Loading,
     Init,
     Update(usize),
 }
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct SimulationNode {
     pub state: SimulationState,
 }
@@ -54,11 +51,15 @@ impl render_graph::Node for SimulationNode {
         match self.state {
             // wait for shader to load
             SimulationState::Loading => {
+                info_once!("Simulation node state: {:#?}", &self.state);
                 match pipeline_cache.get_compute_pipeline_state(pipeline.init_pipeline) {
                     CachedPipelineState::Ok(_) => {
                         self.state = SimulationState::Init;
+                        info_once!("OK!");
                     }
-                    CachedPipelineState::Err(PipelineCacheError::ShaderNotLoaded(_)) => {}
+                    CachedPipelineState::Err(PipelineCacheError::ShaderNotLoaded(_)) => {
+                        info_once!("Shader not loaded.");
+                    }
                     CachedPipelineState::Err(err) => {
                         panic!("Initializing assets/{SHADER_ASSET_PATH}:\n{err}");
                     }
@@ -67,6 +68,7 @@ impl render_graph::Node for SimulationNode {
             }
             // once initialized, start rendering
             SimulationState::Init => {
+                info_once!("Simulation node state: {:#?}", &self.state);
                 if let CachedPipelineState::Ok(_) =
                     pipeline_cache.get_compute_pipeline_state(pipeline.update_pipeline)
                 {

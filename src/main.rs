@@ -6,7 +6,8 @@ pub(crate) use plugins::*;
 fn main() -> AppExit {
     let mut app = App::new();
 
-    app.add_plugins(DefaultPlugins).add_plugins((
+    app.add_plugins((
+        DefaultPlugins.set(ImagePlugin::default_nearest()),
         SimpleSubsecondPlugin::default(),
         UiPlugin,
         SimulationPlugin,

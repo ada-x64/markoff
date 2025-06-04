@@ -20,7 +20,7 @@ use bevy::{
 
 use crate::SimulationImages;
 
-pub const SHADER_ASSET_PATH: &str = "shaders/simulation.wgsl";
+pub const SHADER_ASSET_PATH: &str = "shader/simulation.wgsl";
 
 #[derive(Resource)]
 pub struct SimulationPipeline {

@@ -19,25 +19,31 @@ pub use shader::*;
 #[derive(States, Default, Debug, PartialEq, Eq, Hash, Copy, Clone)]
 pub enum SimulationPluginState {
     #[default]
-    Loading,
+    Closed,
     Init,
+    Loading,
     Paused,
     Running,
-    Closed,
 }
 
 pub struct SimulationPlugin;
 impl Plugin for SimulationPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(ExtractResourcePlugin::<SimulationImages>::default())
+        app.add_plugins((ExtractResourcePlugin::<SimulationImages>::default(),))
             .init_state::<SimulationPluginState>()
             .add_systems(Startup, setup)
+            .add_systems(OnEnter(SimulationPluginState::Init), spawn_sprite)
+            .add_systems(OnEnter(SimulationPluginState::Running), || {
+                info!("Running simulation!")
+            })
+            .add_systems(OnEnter(SimulationPluginState::Closed), cleanup)
             .add_systems(
                 Update,
-                (switch_textures).run_if(in_state(SimulationPluginState::Running)),
-            )
-            .add_systems(OnEnter(SimulationPluginState::Init), spawn_sprite)
-            .add_systems(OnEnter(SimulationPluginState::Closed), cleanup);
+                (
+                    (switch_textures).run_if(in_state(SimulationPluginState::Running)),
+                    (init).run_if(in_state(SimulationPluginState::Init)),
+                ),
+            );
         let render_app = app.sub_app_mut(RenderApp);
         render_app.add_systems(
             Render,
@@ -106,4 +112,8 @@ pub fn switch_textures(
     } else {
         sprite.image = images.texture_a.clone_weak();
     }
+}
+
+pub fn init(mut next: ResMut<NextState<SimulationPluginState>>) {
+    next.set(SimulationPluginState::Running);
 }
