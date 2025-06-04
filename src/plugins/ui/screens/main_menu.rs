@@ -3,11 +3,12 @@ use bevy_simple_subsecond_system::hot;
 
 use crate::{
     screens::{Screen, ScreenMarker},
+    ui::UiAssets,
     widgets::*,
 };
 
 #[hot]
-pub fn init(mut commands: Commands) {
+pub fn init(mut commands: Commands, assets: Res<UiAssets>) {
     commands
         .spawn((
             ScreenMarker,
@@ -20,7 +21,7 @@ pub fn init(mut commands: Commands) {
                 align_items: AlignItems::Center,
                 ..Default::default()
             },
-            // children![title, buttons_wrapper],
+            children![bg(assets.bg1.clone_weak())],
         ))
         .with_children(|layout| {
             layout.spawn((

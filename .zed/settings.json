@@ -5,6 +5,9 @@
         "rust": {
           "analyzerTargetDir": true
         },
+        "cargo": {
+          "allTargets": true
+        },
         "procMacro": {
           "ignored": {
             "bevy_simple_subsecond_macros": ["hot"]

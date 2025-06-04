@@ -15,24 +15,24 @@ use bevy::{
     },
 };
 
-use crate::{SHADER_ASSET_PATH, SimulationBindGroups, SimulationPipeline};
+use crate::{SHADER_ASSET_PATH, SimBindGroups, SimPipeline};
 
-pub const DISPLAY_FACTOR: u32 = 4;
+pub const DISPLAY_FACTOR: u32 = 1;
 pub const SIMULATION_SIZE: (u32, u32) = (512 / DISPLAY_FACTOR, 512 / DISPLAY_FACTOR);
 pub const WORKGROUP_SIZE: u32 = 8; // workgroup = num threads
 
 /// Double buffer.
 #[derive(Resource, Clone, ExtractResource)]
-pub struct SimulationImages {
+pub struct SimImages {
     pub texture_a: Handle<Image>,
     pub texture_b: Handle<Image>,
 }
 
 #[derive(Debug, Hash, PartialEq, Eq, Clone, RenderLabel)]
-pub struct SimulationLabel;
+pub struct SimLabel;
 
 #[derive(Default, Debug)]
-pub enum SimulationState {
+pub enum SimNodeState {
     #[default]
     Loading,
     Init,
@@ -40,21 +40,21 @@ pub enum SimulationState {
 }
 #[derive(Default, Debug)]
 pub struct SimulationNode {
-    pub state: SimulationState,
+    pub state: SimNodeState,
 }
 
 impl render_graph::Node for SimulationNode {
     fn update(&mut self, world: &mut World) {
-        let pipeline = world.resource::<SimulationPipeline>();
+        let pipeline = world.resource::<SimPipeline>();
         let pipeline_cache = world.resource::<PipelineCache>();
 
         match self.state {
             // wait for shader to load
-            SimulationState::Loading => {
+            SimNodeState::Loading => {
                 info_once!("Simulation node state: {:#?}", &self.state);
                 match pipeline_cache.get_compute_pipeline_state(pipeline.init_pipeline) {
                     CachedPipelineState::Ok(_) => {
-                        self.state = SimulationState::Init;
+                        self.state = SimNodeState::Init;
                         info_once!("OK!");
                     }
                     CachedPipelineState::Err(PipelineCacheError::ShaderNotLoaded(_)) => {
@@ -67,18 +67,18 @@ impl render_graph::Node for SimulationNode {
                 }
             }
             // once initialized, start rendering
-            SimulationState::Init => {
+            SimNodeState::Init => {
                 info_once!("Simulation node state: {:#?}", &self.state);
                 if let CachedPipelineState::Ok(_) =
                     pipeline_cache.get_compute_pipeline_state(pipeline.update_pipeline)
                 {
-                    self.state = SimulationState::Update(1);
+                    self.state = SimNodeState::Update(1);
                 }
             }
             // switch buffer
-            SimulationState::Update(0) => self.state = SimulationState::Update(1),
-            SimulationState::Update(1) => self.state = SimulationState::Update(0),
-            SimulationState::Update(_) => unreachable!(),
+            SimNodeState::Update(0) => self.state = SimNodeState::Update(1),
+            SimNodeState::Update(1) => self.state = SimNodeState::Update(0),
+            SimNodeState::Update(_) => unreachable!(),
         }
     }
     fn run(
@@ -87,16 +87,16 @@ impl render_graph::Node for SimulationNode {
         render_context: &mut RenderContext,
         world: &World,
     ) -> Result<(), render_graph::NodeRunError> {
-        let bind_groups = &world.resource::<SimulationBindGroups>().0;
+        let bind_groups = &world.resource::<SimBindGroups>().0;
         let pipeline_cache = &world.resource::<PipelineCache>();
-        let pipeline = &world.resource::<SimulationPipeline>();
+        let pipeline = &world.resource::<SimPipeline>();
         let mut pass = render_context
             .command_encoder()
             .begin_compute_pass(&ComputePassDescriptor::default());
 
         match self.state {
-            SimulationState::Loading => {}
-            SimulationState::Init => {
+            SimNodeState::Loading => {}
+            SimNodeState::Init => {
                 let init_pipeline = pipeline_cache
                     .get_compute_pipeline(pipeline.init_pipeline)
                     .unwrap();
@@ -109,7 +109,7 @@ impl render_graph::Node for SimulationNode {
                 );
             }
             // switch buffer
-            SimulationState::Update(idx) => {
+            SimNodeState::Update(idx) => {
                 let update_pipeline = pipeline_cache
                     .get_compute_pipeline(pipeline.update_pipeline)
                     .unwrap();

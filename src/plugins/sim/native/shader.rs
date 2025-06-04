@@ -18,18 +18,18 @@ use bevy::{
     },
 };
 
-use crate::SimulationImages;
+use crate::SimImages;
 
 pub const SHADER_ASSET_PATH: &str = "shader/simulation.wgsl";
 
 #[derive(Resource)]
-pub struct SimulationPipeline {
+pub struct SimPipeline {
     pub texture_bind_group_layout: BindGroupLayout,
     pub init_pipeline: CachedComputePipelineId,
     pub update_pipeline: CachedComputePipelineId,
 }
 
-impl FromWorld for SimulationPipeline {
+impl FromWorld for SimPipeline {
     fn from_world(world: &mut World) -> Self {
         let render_device = world.resource::<RenderDevice>();
         let texture_bind_group_layout = render_device.create_bind_group_layout(
@@ -63,7 +63,7 @@ impl FromWorld for SimulationPipeline {
             zero_initialize_workgroup_memory: true,
         });
 
-        SimulationPipeline {
+        SimPipeline {
             init_pipeline,
             texture_bind_group_layout,
             update_pipeline,
@@ -72,13 +72,13 @@ impl FromWorld for SimulationPipeline {
 }
 
 #[derive(Resource)]
-pub struct SimulationBindGroups(pub [BindGroup; 2]);
+pub struct SimBindGroups(pub [BindGroup; 2]);
 
 pub fn prepare_bind_group(
     mut commands: Commands,
-    pipeline: Res<SimulationPipeline>,
+    pipeline: Res<SimPipeline>,
     gpu_images: Res<RenderAssets<GpuImage>>,
-    images: Res<SimulationImages>,
+    images: Res<SimImages>,
     render_device: Res<RenderDevice>,
 ) {
     let view_a = gpu_images.get(&images.texture_a).unwrap();
@@ -93,5 +93,5 @@ pub fn prepare_bind_group(
         &pipeline.texture_bind_group_layout,
         &BindGroupEntries::sequential((&view_b.texture_view, &view_a.texture_view)),
     );
-    commands.insert_resource(SimulationBindGroups([bind_group_0, bind_group_1]));
+    commands.insert_resource(SimBindGroups([bind_group_0, bind_group_1]));
 }

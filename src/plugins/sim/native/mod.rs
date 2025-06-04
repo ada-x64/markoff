@@ -17,7 +17,7 @@ pub mod shader;
 pub use shader::*;
 
 #[derive(States, Default, Debug, PartialEq, Eq, Hash, Copy, Clone)]
-pub enum SimulationPluginState {
+pub enum SimState {
     #[default]
     Closed,
     Init,
@@ -29,19 +29,17 @@ pub enum SimulationPluginState {
 pub struct SimulationPlugin;
 impl Plugin for SimulationPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins((ExtractResourcePlugin::<SimulationImages>::default(),))
-            .init_state::<SimulationPluginState>()
+        app.add_plugins((ExtractResourcePlugin::<SimImages>::default(),))
+            .init_state::<SimState>()
             .add_systems(Startup, setup)
-            .add_systems(OnEnter(SimulationPluginState::Init), spawn_sprite)
-            .add_systems(OnEnter(SimulationPluginState::Running), || {
-                info!("Running simulation!")
-            })
-            .add_systems(OnEnter(SimulationPluginState::Closed), cleanup)
+            .add_systems(OnEnter(SimState::Init), spawn_sprite)
+            .add_systems(OnEnter(SimState::Running), || info!("Running simulation!"))
+            .add_systems(OnEnter(SimState::Closed), cleanup)
             .add_systems(
                 Update,
                 (
-                    (switch_textures).run_if(in_state(SimulationPluginState::Running)),
-                    (init).run_if(in_state(SimulationPluginState::Init)),
+                    (switch_textures).run_if(in_state(SimState::Running)),
+                    (init).run_if(in_state(SimState::Init)),
                 ),
             );
         let render_app = app.sub_app_mut(RenderApp);
@@ -51,12 +49,12 @@ impl Plugin for SimulationPlugin {
         );
 
         let mut render_graph = render_app.world_mut().resource_mut::<RenderGraph>();
-        render_graph.add_node(SimulationLabel, SimulationNode::default());
-        render_graph.add_node_edge(SimulationLabel, CameraDriverLabel)
+        render_graph.add_node(SimLabel, SimulationNode::default());
+        render_graph.add_node_edge(SimLabel, CameraDriverLabel)
     }
     fn finish(&self, app: &mut App) {
         let render_app = app.sub_app_mut(RenderApp);
-        render_app.init_resource::<SimulationPipeline>();
+        render_app.init_resource::<SimPipeline>();
     }
 }
 fn setup(mut commands: Commands, mut images: ResMut<Assets<Image>>) {
@@ -76,18 +74,18 @@ fn setup(mut commands: Commands, mut images: ResMut<Assets<Image>>) {
         TextureUsages::COPY_DST | TextureUsages::STORAGE_BINDING | TextureUsages::TEXTURE_BINDING;
     let image0 = images.add(image.clone());
     let image1 = images.add(image.clone());
-    commands.insert_resource(SimulationImages {
+    commands.insert_resource(SimImages {
         texture_a: image0,
         texture_b: image1,
     });
 }
 
 #[derive(Component)]
-pub struct SimulationSprite;
+pub struct SimSprite;
 
-pub fn spawn_sprite(mut commands: Commands, images: Res<SimulationImages>) {
+pub fn spawn_sprite(mut commands: Commands, images: Res<SimImages>) {
     commands.spawn((
-        SimulationSprite,
+        SimSprite,
         Sprite {
             image: images.texture_a.clone_weak(),
             custom_size: Some(Vec2::new(
@@ -99,14 +97,11 @@ pub fn spawn_sprite(mut commands: Commands, images: Res<SimulationImages>) {
         Transform::from_scale(Vec3::splat(DISPLAY_FACTOR as f32)),
     ));
 }
-pub fn cleanup(mut commands: Commands, query: Single<Entity, With<SimulationSprite>>) {
+pub fn cleanup(mut commands: Commands, query: Single<Entity, With<SimSprite>>) {
     commands.get_entity(query.entity()).unwrap().despawn();
 }
 
-pub fn switch_textures(
-    images: Res<SimulationImages>,
-    mut sprite: Single<&mut Sprite, With<SimulationSprite>>,
-) {
+pub fn switch_textures(images: Res<SimImages>, mut sprite: Single<&mut Sprite, With<SimSprite>>) {
     if sprite.image == images.texture_a {
         sprite.image = images.texture_b.clone_weak();
     } else {
@@ -114,6 +109,6 @@ pub fn switch_textures(
     }
 }
 
-pub fn init(mut next: ResMut<NextState<SimulationPluginState>>) {
-    next.set(SimulationPluginState::Running);
+pub fn init(mut next: ResMut<NextState<SimState>>) {
+    next.set(SimState::Running);
 }

@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::screens::Screen;
+use crate::{SimState, screens::Screen};
 
 // #[derive(Event)]
 // pub struct RestartEvent;
@@ -16,6 +16,7 @@ fn watch_key_presses(
     mut commands: Commands,
     input: Res<ButtonInput<KeyCode>>,
     mut screen: ResMut<NextState<Screen>>,
+    mut sim: ResMut<NextState<SimState>>,
 ) {
     #[allow(clippy::collapsible_if)]
     if input.any_pressed([KeyCode::ControlLeft, KeyCode::ControlRight]) {
@@ -24,6 +25,7 @@ fn watch_key_presses(
             info!("Got Ctrl+KeyR...");
             //commands.send_event(RestartEvent);
             screen.set(Screen::MainMenu);
+            sim.set(SimState::Closed);
         }
         // other conditions
     }
