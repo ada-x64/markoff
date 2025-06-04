@@ -6,16 +6,11 @@ pub(crate) use plugins::*;
 fn main() -> AppExit {
     let mut app = App::new();
 
-    app.add_plugins(DefaultPlugins)
-        .add_systems(
-            PreStartup,
-            |mut pick_settings: ResMut<UiPickingSettings>| {
-                *pick_settings = UiPickingSettings {
-                    require_markers: true,
-                }
-            },
-        )
-        .add_plugins((SimpleSubsecondPlugin::default(), UiPlugin));
+    app.add_plugins(DefaultPlugins).add_plugins((
+        SimpleSubsecondPlugin::default(),
+        UiPlugin,
+        SimulationPlugin,
+    ));
 
     #[cfg(feature = "dev")]
     app.add_plugins(DevPlugin);
