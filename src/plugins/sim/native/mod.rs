@@ -25,7 +25,12 @@ pub const SHADER_ASSET_PATH: &str = "shader/simulation.wgsl";
 pub struct InnerSimPlugin;
 impl Plugin for InnerSimPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(ExtractResourcePlugin::<SimImages>::default());
+        app.add_plugins((
+            ExtractResourcePlugin::<SimImages>::default(),
+            ExtractResourcePlugin::<SimState>::default(),
+            ExtractResourcePlugin::<UseCompute>::default(),
+        ))
+        .add_systems(FixedUpdate, swap_buffer.in_set(ShaderSimSet));
         let render_app = app.sub_app_mut(RenderApp);
         render_app.add_systems(
             Render,
