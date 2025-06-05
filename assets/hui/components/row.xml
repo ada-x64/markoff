@@ -1,0 +1,5 @@
+<template>
+    <node display="flex" flex_direction="column">
+        <slot />
+    </node>
+</template>

@@ -17,11 +17,15 @@ tracing = { version = "0.1", features = [
     "max_level_debug",
     "release_max_level_warn",
 ] }
+bevy_dylib = { version = "0.16.0-rc.5" }
+bevy_hui = "0.4.0"
+bevy_hui_widgets = "0.3.0"
 
 [features]
 default = ["dev"]
-dev_native = []
-dev = []
+dev_native = ["dev", "compute_shaders"]
+dev_web = ["dev"]
+dev = ["bevy/bevy_dev_tools", "bevy/dynamic_linking"]
 compute_shaders = []
 
 ### METADATA AND LINTS ########################################################

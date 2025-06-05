@@ -1,22 +1,31 @@
 use bevy::prelude::*;
-use bevy_hui::prelude::HtmlNode;
+use bevy_hui::prelude::*;
 use strum::{EnumIter, IntoEnumIterator};
 
 // pub mod main_loop;
-pub mod main_menu;
-pub mod sandbox;
+// pub mod main_menu;
+// pub mod sandbox;
 
 #[derive(Component, Copy, Clone, Debug, Default)]
 pub struct ScreenMarker;
 
 #[derive(States, Copy, Clone, Default, Hash, PartialEq, Eq, Debug, EnumIter)]
-pub enum CurrentScreen {
+pub enum Screen {
     #[default]
     MainMenu,
     GameSettings,
     MainLoop,
     Results,
     Sandbox,
+}
+
+#[macro_export]
+macro_rules! next_screen {
+    ($state:expr) => {
+        |mut next_state: ResMut<NextState<Screen>>| {
+            next_state.set($state);
+        }
+    };
 }
 
 #[macro_export]
@@ -32,12 +41,16 @@ pub struct ScreensPlugin;
 impl Plugin for ScreensPlugin {
     fn build(&self, app: &mut App) {
         let _ = {
-            app.init_state::<CurrentScreen>()
-                .add_systems(Startup, (main_menu::register, sandbox::register))
-                .add_systems(OnEnter(CurrentScreen::MainMenu), main_menu::render)
-                .add_systems(OnEnter(CurrentScreen::Sandbox), sandbox::render)
+            app.init_state::<Screen>()
+                // .add_systems(OnEnter(Screen::MainMenu), main_menu::init)
+                // .add_systems(OnEnter(Screen::Sandbox), sandbox::init)
+                // .add_systems(OnEnter(Screen::MainLoop), main_loop::init)
+                .add_systems(
+                    OnEnter(Screen::MainMenu),
+                    load_template!("hui/main_menu.xml"),
+                )
         };
-        for screen in CurrentScreen::iter() {
+        for screen in Screen::iter() {
             app.add_systems(OnExit(screen), cleanup_screen);
         }
     }

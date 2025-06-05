@@ -6,7 +6,10 @@
           "analyzerTargetDir": true
         },
         "check": {
-          "targets": ["wasm32-unknown-unknown", "x86_64-unknown-linux-gnu"]
+          "targets": ["wasm32-unknown-unknown", "x86_64-unknown-linux-gnu"],
+          "features": ["dev_native"],
+          // "features": ["dev_web"],
+          "overrideCommand": ["cargo", "clippy", "--message-format=json"]
         },
         "cargo": {
           // switch this as needed

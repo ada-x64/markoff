@@ -1,0 +1,13 @@
+<template>
+<property name="grid_template_rows" />
+<property name="grid_template_columns" />
+<node
+        display="grid"
+        width="100vw"
+        height="100vh"
+        grid_template_rows="{grid_template_rows}"
+        grid_template_columns="{grid_template_columns}"
+    >
+        <slot />
+    </node>
+</template>

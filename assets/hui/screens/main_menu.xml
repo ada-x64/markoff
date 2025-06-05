@@ -1,0 +1,20 @@
+<template>
+<node
+        display="flex"
+        align_items="center"
+        width="100vw"
+        height="100vh"
+        padding="100px 100px"
+        flex_direction="column"
+        justify_content="space_between"
+    >
+    <text font_size="48" font_color="#FFF">
+        MARKOFF!
+    </text>
+    <node display="flex" flex_direction="column" align_items="center">
+        <menu_button text="Start game!" on_press="goto_game_settings" />
+        <menu_button text="Sandbox" on_press="goto_sandbox" />
+        <menu_button text="Credits" />
+    </node>
+</node>
+</template>

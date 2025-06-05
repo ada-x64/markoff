@@ -35,14 +35,8 @@ impl FromWorld for SimPipeline {
             &BindGroupLayoutEntries::sequential(
                 ShaderStages::COMPUTE,
                 (
-                    texture_storage_2d(
-                        TextureFormat::Rgba8UnormSrgb,
-                        StorageTextureAccess::ReadOnly,
-                    ),
-                    texture_storage_2d(
-                        TextureFormat::Rgba8UnormSrgb,
-                        StorageTextureAccess::WriteOnly,
-                    ),
+                    texture_storage_2d(TextureFormat::Rgba8Unorm, StorageTextureAccess::ReadOnly),
+                    texture_storage_2d(TextureFormat::Rgba8Unorm, StorageTextureAccess::WriteOnly),
                 ),
             ),
         );

@@ -7,15 +7,18 @@ use bevy::{
     },
 };
 
-#[cfg(not(feature = "compute_shaders"))]
-mod web;
-#[cfg(not(feature = "compute_shaders"))]
-use web::*;
+use crate::{
+    sim::{
+        // native::{ShaderSimPlugin, ShaderSimSet},
+        web::{SoftwareSimPlugin, SoftwareSimSet},
+    },
+    teams::types::{Player, Team},
+};
 
-#[cfg(feature = "compute_shaders")]
-mod native;
-#[cfg(feature = "compute_shaders")]
-use native::*;
+// TODO: This is crashing!
+// But we have bigger fish to fry right now.
+// mod native;
+mod web;
 
 #[derive(States, Default, Debug, PartialEq, Eq, Hash, Copy, Clone)]
 pub enum SimState {
@@ -26,25 +29,85 @@ pub enum SimState {
     Running,
 }
 
-#[derive(Resource, Copy, Clone, Default, Debug, PartialEq, Eq)]
+// This should probably be a component
+// #[derive(Default, Resource, ExtractResource, PartialEq, Eq, Hash, Copy, Clone)]
+// pub enum SimRenderState {
+//     #[default]
+//     Closed,
+//     Init,
+//     Running,
+//     Paused,
+// }
+// impl From<SimState> for SimRenderState {
+//     fn from(value: SimState) -> Self {
+//         match value {
+//             SimState::Closed => Self::Closed,
+//             SimState::Init => Self::Init,
+//             SimState::Paused => Self::Paused,
+//             SimState::Running => Self::Running,
+//         }
+//     }
+// }
+
+// Intialized through the UI.
+#[derive(Resource, Clone, Default, Debug, PartialEq)]
 pub struct SimSettings {
-    use_compute: bool,
+    teams: Vec<Team>,
+    players: Vec<Player>,
+}
+
+#[derive(Resource, Clone, Default, Debug, PartialEq, Deref, DerefMut, ExtractResource)]
+pub struct UseCompute(pub bool);
+
+#[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
+pub enum SimSystems {
+    Shader,
+    Software,
 }
 
 pub struct SimPlugin;
 impl Plugin for SimPlugin {
     fn build(&self, app: &mut App) {
         let _ = {
-            app.insert_resource(SimSettings {
-                use_compute: !cfg!(target_arch = "wasm32"),
-            })
-            .insert_resource(Time::<Fixed>::from_hz(5.))
-            .init_resource::<SimImages>()
-            .init_state::<SimState>()
-            .add_plugins(InnerSimPlugin)
-            .add_systems(OnEnter(SimState::Init), spawn_sprite)
-            .add_systems(OnEnter(SimState::Closed), cleanup)
+            app.add_plugins(SoftwareSimPlugin)
+                // <TEMP>
+                .insert_resource(SimSettings {
+                    teams: vec![Team {
+                        color: [255, 0, 0, 255],
+                        id: 0,
+                        name: "the team".into(),
+                        players: vec![],
+                    }],
+                    players: vec![],
+                })
+                // </TEMP>
+                .init_resource::<UseCompute>()
+                // .init_resource::<SimRenderState>()
+                // .add_plugins(ShaderSimPlugin)
+                .insert_resource(Time::<Fixed>::from_hz(10.))
+                .init_state::<SimState>()
+                // .add_systems(StateTransition, set_sim_render_state)
+                .add_systems(OnEnter(SimState::Init), (init_images, spawn_sprite).chain())
+                .add_systems(OnEnter(SimState::Closed), cleanup)
+                .configure_sets(
+                    Update,
+                    (
+                        SoftwareSimSet.run_if(resource_exists_and_equals(UseCompute(false))),
+                        // ShaderSimSet.run_if(resource_exists_and_equals(UseCompute(true))),
+                    ),
+                )
+                .configure_sets(
+                    OnEnter(SimState::Init),
+                    (
+                        SoftwareSimSet.run_if(resource_exists_and_equals(UseCompute(false))),
+                        // ShaderSimSet.run_if(resource_exists_and_equals(UseCompute(true))),
+                    ),
+                )
         };
+        // app.sub_app_mut(RenderApp).configure_sets(
+        //     Render,
+        //     ShaderSimSet.run_if(resource_exists_and_equals(UseCompute(true))),
+        // );
     }
 }
 
@@ -54,31 +117,47 @@ pub struct SimImages {
     pub texture_a: Handle<Image>,
     pub texture_b: Handle<Image>,
 }
-impl FromWorld for SimImages {
-    fn from_world(world: &mut World) -> Self {
-        let mut images = world.get_resource_mut::<Assets<Image>>().unwrap();
-        let mut image = Image::new_fill(
-            Extent3d {
-                width: SIM_SIZE,
-                height: SIM_SIZE,
-                depth_or_array_layers: 1,
-            },
-            TextureDimension::D2,
-            &[0, 0, 0, 255],
-            // !NB! compute shader should reflect this
+fn init_images(
+    mut commands: Commands,
+    mut images: ResMut<Assets<Image>>,
+    use_compute: Res<UseCompute>,
+) {
+    let (asset_usage, format) = if cfg!(feature = "compute_shaders") {
+        // !NB! compute shader should reflect this
+        (RenderAssetUsages::RENDER_WORLD, TextureFormat::Rgba8Unorm)
+    } else {
+        (
+            RenderAssetUsages::RENDER_WORLD | RenderAssetUsages::MAIN_WORLD,
             TextureFormat::Rgba8UnormSrgb,
-            RenderAssetUsages::MAIN_WORLD | RenderAssetUsages::RENDER_WORLD,
-        );
-        image.texture_descriptor.usage = TextureUsages::COPY_DST
-            // | TextureUsages::STORAGE_BINDING
-            | TextureUsages::TEXTURE_BINDING;
-        let texture_a = images.add(image.clone());
-        let texture_b = images.add(image);
-        Self {
-            texture_a,
-            texture_b,
-        }
+        )
+    };
+    let size = if use_compute.0 {
+        // native::SIM_SIZE
+        512 // TEMP
+    } else {
+        web::SIM_SIZE
+    };
+    let mut image = Image::new_fill(
+        Extent3d {
+            width: size,
+            height: size,
+            depth_or_array_layers: 1,
+        },
+        TextureDimension::D2,
+        &[0, 0, 0, 255],
+        format,
+        asset_usage,
+    );
+    image.texture_descriptor.usage = TextureUsages::COPY_DST | TextureUsages::TEXTURE_BINDING;
+    #[cfg(feature = "compute_shaders")]
+    {
+        image.texture_descriptor.usage |= TextureUsages::STORAGE_BINDING;
     }
+
+    commands.insert_resource(SimImages {
+        texture_a: images.add(image.clone()),
+        texture_b: images.add(image),
+    });
 }
 
 #[derive(Component)]
@@ -100,3 +179,7 @@ pub fn spawn_sprite(mut commands: Commands, images: Res<SimImages>, assets: Res<
 pub fn cleanup(mut commands: Commands, query: Single<Entity, With<SimSprite>>) {
     commands.get_entity(query.entity()).unwrap().despawn();
 }
+
+// fn set_sim_render_state(state: Res<State<SimState>>, mut render_state: ResMut<SimRenderState>) {
+//     *render_state = (*state.get()).into()
+// }

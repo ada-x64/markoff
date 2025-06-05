@@ -6,12 +6,12 @@ use bevy::{prelude::*, tasks::ComputeTaskPool};
 
 use crate::{
     cells::types::{CellCondition, CellResult},
-    sim::{SimImages, SimSprite, SimState, spawn_sprite},
+    sim::{SimImages, SimSprite, SimState, UseCompute, spawn_sprite},
 };
 
-pub const DISPLAY_FACTOR: u32 = 1;
-pub const IMG_SIZE: u32 = 64;
-pub const SIM_SIZE: u32 = IMG_SIZE / DISPLAY_FACTOR; // 64
+pub const DISPLAY_FACTOR: u32 = 8;
+pub const IMG_SIZE: u32 = 512;
+pub const SIM_SIZE: u32 = IMG_SIZE / DISPLAY_FACTOR;
 pub const NUM_WORKGROUPS: usize = 8;
 pub const CHUNK_SIZE: usize = (SIM_SIZE / NUM_WORKGROUPS as u32) as usize;
 
@@ -19,12 +19,23 @@ type PixelColor<'a> = &'a [u8; 4];
 const BLACK: PixelColor = &[0, 0, 0, 255];
 const WHITE: PixelColor = &[255, 255, 255, 255];
 
-pub struct InnerSimPlugin;
-impl Plugin for InnerSimPlugin {
+#[derive(SystemSet, Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub struct SoftwareSimSet;
+
+pub struct SoftwareSimPlugin;
+impl Plugin for SoftwareSimPlugin {
     fn build(&self, app: &mut App) {
         let _ = {
-            app.add_systems(FixedUpdate, (draw).run_if(in_state(SimState::Running)))
-                .add_systems(OnEnter(SimState::Init), init.after(spawn_sprite))
+            app.add_systems(
+                FixedUpdate,
+                (draw)
+                    .run_if(in_state(SimState::Running))
+                    .in_set(SoftwareSimSet),
+            )
+            .add_systems(
+                OnEnter(SimState::Init),
+                init.after(spawn_sprite).in_set(SoftwareSimSet),
+            )
         };
     }
 }

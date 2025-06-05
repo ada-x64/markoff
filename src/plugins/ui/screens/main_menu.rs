@@ -1,71 +1,28 @@
 use bevy::prelude::*;
-use bevy_simple_subsecond_system::hot;
+use bevy_hui::prelude::*;
 
-use crate::ui::{
-    UiAssets,
-    screens::{Screen, ScreenMarker},
-    widgets::*,
-};
+use crate::ui::screens::{CurrentScreen, ScreenMarker};
 
-#[hot]
-pub fn init(mut commands: Commands, assets: Res<UiAssets>) {
-    commands
-        .spawn((
-            ScreenMarker,
-            Node {
-                display: Display::Flex,
-                flex_direction: FlexDirection::Column,
-                width: Val::Percent(100.),
-                height: Val::Percent(100.),
-                justify_content: JustifyContent::Center,
-                align_items: AlignItems::Center,
-                ..Default::default()
-            },
-            children![bg(assets.bg1.clone_weak())],
-        ))
-        .with_children(|layout| {
-            layout.spawn((
-                Node {
-                    height: Val::Percent(33.),
-                    ..Default::default()
-                },
-                children![TextBundle::title("MARKOFF!")],
-            ));
-            let buttons_wrapper = (Node {
-                display: Display::Flex,
-                flex_direction: FlexDirection::Column,
-                width: Val::Percent(33.),
-                height: Val::Percent(33.),
-                margin: UiRect::top(Val::Px(32.)).with_bottom(Val::Px(32.)),
-                ..Default::default()
-            },);
-            layout.spawn(buttons_wrapper).with_children(|btnwrap| {
-                btnwrap.spawn(button("play", "New Game")).observe(on_click);
-                btnwrap
-                    .spawn(button("sandbox", "Sandbox"))
-                    .observe(on_click);
-                #[cfg(not(target_arch = "wasm32"))]
-                btnwrap.spawn(button("quit", "Quit")).observe(on_click);
-            });
-        });
+pub fn render(mut commands: Commands, server: Res<AssetServer>) {
+    commands.spawn((
+        ScreenMarker,
+        HtmlNode(server.load("hui/screens/main_menu.xml")),
+    ));
 }
 
-pub fn on_click(
-    trigger: Trigger<Pointer<Click>>,
-    query: Query<&Name, With<Button>>,
-    mut commands: Commands,
-    mut screen: ResMut<NextState<Screen>>,
-) {
-    if let Ok(btn) = query.get(trigger.target()) {
-        match btn.as_str() {
-            "play" => screen.set(Screen::GameSettings),
-            "sandbox" => screen.set(Screen::Sandbox),
-            "quit" => {
-                commands.send_event(AppExit::Success);
-            }
-            _ => {
-                warn!("Got unknown button press: '{btn}'")
-            }
-        }
-    }
+pub fn register(mut cmds: Commands, mut html_comps: HtmlComponents, mut html_funcs: HtmlFunctions) {
+    // html_comps.register("hui/screens/main_menu/...")
+    html_funcs.register(
+        "goto_game_settings",
+        |In(_entity), mut state: ResMut<NextState<CurrentScreen>>| {
+            info!("goto_game_settings");
+            state.set(CurrentScreen::GameSettings);
+        },
+    );
+    html_funcs.register(
+        "goto_sandbox",
+        |In(_entity), mut state: ResMut<NextState<CurrentScreen>>| {
+            state.set(CurrentScreen::Sandbox);
+        },
+    );
 }
