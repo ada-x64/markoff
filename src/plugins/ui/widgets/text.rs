@@ -1,4 +1,4 @@
-use crate::theme::text::TextBundleBase;
+use crate::ui::theme::text::TextBundleBase;
 use bevy::prelude::*;
 
 #[derive(Component, Debug, Default, Clone, Copy)]

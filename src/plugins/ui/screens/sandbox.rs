@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 use bevy_simple_subsecond_system::hot;
 
-use crate::screens::ScreenMarker;
-use crate::widgets::*;
+use crate::ui::screens::ScreenMarker;
+use crate::ui::widgets::*;
 
 mod top_bar;
 

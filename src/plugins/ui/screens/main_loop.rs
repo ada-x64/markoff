@@ -1,6 +1,9 @@
 use bevy::prelude::*;
 
-use crate::{SimState, UiAssets, widgets::bg};
+use crate::{
+    sim::SimState,
+    ui::{UiAssets, widgets::bg},
+};
 
 pub fn init(
     mut commands: Commands,
@@ -8,5 +11,5 @@ pub fn init(
     assets: Res<UiAssets>,
 ) {
     sim_state.set(SimState::Init);
-    commands.spawn(bg(assets.bg1.clone_weak()));
+    // commands.spawn(bg(assets.bg1.clone_weak()));
 }

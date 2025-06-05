@@ -5,8 +5,13 @@
         "rust": {
           "analyzerTargetDir": true
         },
+        "check": {
+          "targets": ["wasm32-unknown-unknown", "x86_64-unknown-linux-gnu"]
+        },
         "cargo": {
-          "allTargets": true
+          // switch this as needed
+          "target": "wasm32-unknown-unknown"
+          // "target": "x86_64-unknown-linux-gnu"
         },
         "procMacro": {
           "ignored": {

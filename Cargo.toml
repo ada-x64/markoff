@@ -6,10 +6,12 @@ edition = "2024"
 [dependencies]
 bevy = "0.16"
 bevy_simple_subsecond_system = "0.2"
+itertools = "0.14.0"
 log = { version = "0.4", features = [
     "max_level_debug",
     "release_max_level_warn",
 ] }
+rand = "0.9.1"
 strum = { version = "0.27.1", features = ["derive"] }
 tracing = { version = "0.1", features = [
     "max_level_debug",
@@ -20,6 +22,7 @@ tracing = { version = "0.1", features = [
 default = ["dev"]
 dev_native = []
 dev = []
+compute_shaders = []
 
 ### METADATA AND LINTS ########################################################
 [package.metadata.bevy_cli.native.dev]

@@ -1,7 +1,7 @@
 // Textures are stored in a double buffer.
 // The shader reads the input texture and writes to the output texture.
-@group(0) @binding(0) var input: texture_storage_2d<r32float, read>;
-@group(0) @binding(1) var output: texture_storage_2d<r32float, write>;
+@group(0) @binding(0) var input: texture_storage_2d<rgba8unorm, read>;
+@group(0) @binding(1) var output: texture_storage_2d<rgba8unorm, write>;
 
 
 fn hash(value: u32) -> u32 {

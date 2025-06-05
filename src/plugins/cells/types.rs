@@ -18,7 +18,6 @@ pub struct Grid {
 
 /// Stored in the grid
 pub enum CellState {
-    Edge,
     Empty,
     Active,
     Seed(Seed, TeamID),
@@ -26,18 +25,23 @@ pub enum CellState {
 }
 
 /// Used to check cell state
-#[repr(u8)]
+#[derive(PartialEq, Eq, Copy, Clone, Default)]
 pub enum CellCondition {
-    Edge,
+    #[default]
     Empty,
     Active,
     Owned,
     Enemy,
 }
+#[derive(PartialEq, Eq, Copy, Clone)]
+pub enum CellResult {
+    Empty,
+    Active,
+    Untouched,
+}
 impl CellCondition {
     pub fn from_cell_state(s: CellState, team: u8) -> Self {
         match s {
-            CellState::Edge => Self::Edge,
             CellState::Empty => Self::Empty,
             CellState::Active => Self::Active,
             CellState::Captured(t) if t == team => Self::Owned,

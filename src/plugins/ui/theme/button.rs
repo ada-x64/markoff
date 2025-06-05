@@ -1,7 +1,5 @@
 use bevy::{color::palettes::tailwind, prelude::*};
 
-use crate::theme::text::TextBundleBase;
-
 /// Marker component
 #[derive(Debug, Clone, Copy, Component)]
 pub struct ButtonStyle;

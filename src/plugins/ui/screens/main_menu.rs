@@ -1,9 +1,9 @@
 use bevy::prelude::*;
 use bevy_simple_subsecond_system::hot;
 
-use crate::{
+use crate::ui::{
+    UiAssets,
     screens::{Screen, ScreenMarker},
-    ui::UiAssets,
     widgets::*,
 };
 

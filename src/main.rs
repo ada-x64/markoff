@@ -1,3 +1,6 @@
+#![feature(iter_advance_by)]
+#![feature(iter_next_chunk)]
+
 use bevy::prelude::*;
 use bevy_simple_subsecond_system::prelude::*;
 pub(crate) mod plugins;
@@ -9,12 +12,12 @@ fn main() -> AppExit {
     app.add_plugins((
         DefaultPlugins.set(ImagePlugin::default_nearest()),
         SimpleSubsecondPlugin::default(),
-        UiPlugin,
-        SimulationPlugin,
+        ui::UiPlugin,
+        sim::SimPlugin,
     ));
 
     #[cfg(feature = "dev")]
-    app.add_plugins(DevPlugin);
+    app.add_plugins(dev::DevPlugin);
 
     app.run()
 }

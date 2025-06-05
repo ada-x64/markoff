@@ -2866,7 +2866,9 @@ version = "0.1.0"
 dependencies = [
  "bevy",
  "bevy_simple_subsecond_system",
+ "itertools 0.14.0",
  "log",
+ "rand 0.9.1",
  "strum 0.27.1",
  "tracing",
 ]

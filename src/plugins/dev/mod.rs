@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::{SimState, screens::Screen};
+use crate::{sim::SimState, ui::screens::Screen};
 
 // #[derive(Event)]
 // pub struct RestartEvent;

@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use bevy_simple_subsecond_system::hot;
 
-use crate::{screens::Screen, widgets::*};
+use crate::ui::{screens::Screen, widgets::*};
 
 #[hot]
 pub fn top_bar(commands: &mut Commands) -> Entity {

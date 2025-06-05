@@ -6,7 +6,6 @@
 use bevy::{
     prelude::*,
     render::{
-        extract_resource::ExtractResource,
         render_graph::{self, RenderLabel},
         render_resource::{
             CachedPipelineState, ComputePassDescriptor, PipelineCache, PipelineCacheError,
@@ -15,18 +14,7 @@ use bevy::{
     },
 };
 
-use crate::{SHADER_ASSET_PATH, SimBindGroups, SimPipeline};
-
-pub const DISPLAY_FACTOR: u32 = 1;
-pub const SIMULATION_SIZE: (u32, u32) = (512 / DISPLAY_FACTOR, 512 / DISPLAY_FACTOR);
-pub const WORKGROUP_SIZE: u32 = 8; // workgroup = num threads
-
-/// Double buffer.
-#[derive(Resource, Clone, ExtractResource)]
-pub struct SimImages {
-    pub texture_a: Handle<Image>,
-    pub texture_b: Handle<Image>,
-}
+use crate::sim::native::{SHADER_ASSET_PATH, SIM_SIZE, SimBindGroups, SimPipeline, WORKGROUP_SIZE};
 
 #[derive(Debug, Hash, PartialEq, Eq, Clone, RenderLabel)]
 pub struct SimLabel;
@@ -102,11 +90,7 @@ impl render_graph::Node for SimulationNode {
                     .unwrap();
                 pass.set_bind_group(0, &bind_groups[0], &[]);
                 pass.set_pipeline(init_pipeline);
-                pass.dispatch_workgroups(
-                    SIMULATION_SIZE.0 / WORKGROUP_SIZE,
-                    SIMULATION_SIZE.1 / WORKGROUP_SIZE,
-                    1,
-                );
+                pass.dispatch_workgroups(SIM_SIZE / WORKGROUP_SIZE, SIM_SIZE / WORKGROUP_SIZE, 1);
             }
             // switch buffer
             SimNodeState::Update(idx) => {
@@ -115,11 +99,7 @@ impl render_graph::Node for SimulationNode {
                     .unwrap();
                 pass.set_bind_group(0, &bind_groups[idx], &[]);
                 pass.set_pipeline(update_pipeline);
-                pass.dispatch_workgroups(
-                    SIMULATION_SIZE.0 / WORKGROUP_SIZE,
-                    SIMULATION_SIZE.1 / WORKGROUP_SIZE,
-                    1,
-                );
+                pass.dispatch_workgroups(SIM_SIZE / WORKGROUP_SIZE, SIM_SIZE / WORKGROUP_SIZE, 1);
             }
         }
         Ok(())

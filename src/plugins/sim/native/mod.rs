@@ -1,12 +1,10 @@
+//! The Native simulation uses compute shaders.
+
 use bevy::{
-    asset::RenderAssetUsages,
     prelude::*,
     render::{
-        Render, RenderApp, RenderSet,
-        extract_resource::ExtractResourcePlugin,
-        graph::CameraDriverLabel,
-        render_graph::RenderGraph,
-        render_resource::{Extent3d, TextureDimension, TextureFormat, TextureUsages},
+        Render, RenderApp, RenderSet, extract_resource::ExtractResourcePlugin,
+        graph::CameraDriverLabel, render_graph::RenderGraph,
     },
 };
 
@@ -16,32 +14,18 @@ pub use render::*;
 pub mod shader;
 pub use shader::*;
 
-#[derive(States, Default, Debug, PartialEq, Eq, Hash, Copy, Clone)]
-pub enum SimState {
-    #[default]
-    Closed,
-    Init,
-    Loading,
-    Paused,
-    Running,
-}
+use crate::sim::SimImages;
 
-pub struct SimulationPlugin;
-impl Plugin for SimulationPlugin {
+pub const DISPLAY_FACTOR: u32 = 1;
+pub const IMG_SIZE: u32 = 512;
+pub const SIM_SIZE: u32 = IMG_SIZE / DISPLAY_FACTOR;
+pub const WORKGROUP_SIZE: u32 = 8; // workgroup = num threads
+pub const SHADER_ASSET_PATH: &str = "shader/simulation.wgsl";
+
+pub struct InnerSimPlugin;
+impl Plugin for InnerSimPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins((ExtractResourcePlugin::<SimImages>::default(),))
-            .init_state::<SimState>()
-            .add_systems(Startup, setup)
-            .add_systems(OnEnter(SimState::Init), spawn_sprite)
-            .add_systems(OnEnter(SimState::Running), || info!("Running simulation!"))
-            .add_systems(OnEnter(SimState::Closed), cleanup)
-            .add_systems(
-                Update,
-                (
-                    (switch_textures).run_if(in_state(SimState::Running)),
-                    (init).run_if(in_state(SimState::Init)),
-                ),
-            );
+        app.add_plugins(ExtractResourcePlugin::<SimImages>::default());
         let render_app = app.sub_app_mut(RenderApp);
         render_app.add_systems(
             Render,
@@ -56,59 +40,4 @@ impl Plugin for SimulationPlugin {
         let render_app = app.sub_app_mut(RenderApp);
         render_app.init_resource::<SimPipeline>();
     }
-}
-fn setup(mut commands: Commands, mut images: ResMut<Assets<Image>>) {
-    let mut image = Image::new_fill(
-        Extent3d {
-            width: SIMULATION_SIZE.0,
-            height: SIMULATION_SIZE.1,
-            depth_or_array_layers: 1,
-        },
-        TextureDimension::D2,
-        &[0, 0, 0, 255],
-        // !NB! compute shader should reflect this
-        TextureFormat::R32Float,
-        RenderAssetUsages::RENDER_WORLD,
-    );
-    image.texture_descriptor.usage =
-        TextureUsages::COPY_DST | TextureUsages::STORAGE_BINDING | TextureUsages::TEXTURE_BINDING;
-    let image0 = images.add(image.clone());
-    let image1 = images.add(image.clone());
-    commands.insert_resource(SimImages {
-        texture_a: image0,
-        texture_b: image1,
-    });
-}
-
-#[derive(Component)]
-pub struct SimSprite;
-
-pub fn spawn_sprite(mut commands: Commands, images: Res<SimImages>) {
-    commands.spawn((
-        SimSprite,
-        Sprite {
-            image: images.texture_a.clone_weak(),
-            custom_size: Some(Vec2::new(
-                SIMULATION_SIZE.0 as f32,
-                SIMULATION_SIZE.1 as f32,
-            )),
-            ..Default::default()
-        },
-        Transform::from_scale(Vec3::splat(DISPLAY_FACTOR as f32)),
-    ));
-}
-pub fn cleanup(mut commands: Commands, query: Single<Entity, With<SimSprite>>) {
-    commands.get_entity(query.entity()).unwrap().despawn();
-}
-
-pub fn switch_textures(images: Res<SimImages>, mut sprite: Single<&mut Sprite, With<SimSprite>>) {
-    if sprite.image == images.texture_a {
-        sprite.image = images.texture_b.clone_weak();
-    } else {
-        sprite.image = images.texture_a.clone_weak();
-    }
-}
-
-pub fn init(mut next: ResMut<NextState<SimState>>) {
-    next.set(SimState::Running);
 }

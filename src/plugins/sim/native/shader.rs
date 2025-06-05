@@ -18,9 +18,7 @@ use bevy::{
     },
 };
 
-use crate::SimImages;
-
-pub const SHADER_ASSET_PATH: &str = "shader/simulation.wgsl";
+use crate::sim::native::{SHADER_ASSET_PATH, SimImages};
 
 #[derive(Resource)]
 pub struct SimPipeline {
@@ -37,8 +35,14 @@ impl FromWorld for SimPipeline {
             &BindGroupLayoutEntries::sequential(
                 ShaderStages::COMPUTE,
                 (
-                    texture_storage_2d(TextureFormat::R32Float, StorageTextureAccess::ReadOnly),
-                    texture_storage_2d(TextureFormat::R32Float, StorageTextureAccess::WriteOnly),
+                    texture_storage_2d(
+                        TextureFormat::Rgba8UnormSrgb,
+                        StorageTextureAccess::ReadOnly,
+                    ),
+                    texture_storage_2d(
+                        TextureFormat::Rgba8UnormSrgb,
+                        StorageTextureAccess::WriteOnly,
+                    ),
                 ),
             ),
         );
