@@ -1,4 +1,8 @@
-use bevy::prelude::*;
+use bevy::{
+    color::palettes::basic,
+    dev_tools::fps_overlay::{FpsOverlayConfig, FpsOverlayPlugin},
+    prelude::*,
+};
 
 use crate::{sim::SimState, ui::screens::Screen};
 
@@ -8,7 +12,14 @@ use crate::{sim::SimState, ui::screens::Screen};
 pub struct DevPlugin;
 impl Plugin for DevPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, watch_key_presses);
+        app.add_systems(Update, watch_key_presses)
+            .add_plugins(FpsOverlayPlugin {
+                config: FpsOverlayConfig {
+                    enabled: true,
+                    text_color: basic::RED.into(),
+                    ..Default::default()
+                },
+            });
     }
 }
 
