@@ -20,6 +20,5 @@ pub fn top_bar(commands: &mut Commands) -> Entity {
 }
 
 fn on_click(_trigger: Trigger<Pointer<Click>>, mut screen: ResMut<NextState<Screen>>) {
-    info!("Got click!");
     screen.set(Screen::MainMenu);
 }

@@ -25,7 +25,7 @@ pub enum CellState {
 }
 
 /// Used to check cell state
-#[derive(PartialEq, Eq, Copy, Clone, Default)]
+#[derive(Debug, PartialEq, Eq, Copy, Clone, Default)]
 pub enum CellCondition {
     #[default]
     Empty,
@@ -33,7 +33,7 @@ pub enum CellCondition {
     Owned,
     Enemy,
 }
-#[derive(PartialEq, Eq, Copy, Clone)]
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
 pub enum CellResult {
     Empty,
     Active,

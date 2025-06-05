@@ -1,5 +1,6 @@
 #![feature(iter_advance_by)]
 #![feature(iter_next_chunk)]
+#![feature(slice_as_array)]
 
 use bevy::prelude::*;
 use bevy_simple_subsecond_system::prelude::*;

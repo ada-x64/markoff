@@ -39,15 +39,11 @@ impl render_graph::Node for SimulationNode {
         match self.state {
             // wait for shader to load
             SimNodeState::Loading => {
-                info_once!("Simulation node state: {:#?}", &self.state);
                 match pipeline_cache.get_compute_pipeline_state(pipeline.init_pipeline) {
                     CachedPipelineState::Ok(_) => {
                         self.state = SimNodeState::Init;
-                        info_once!("OK!");
                     }
-                    CachedPipelineState::Err(PipelineCacheError::ShaderNotLoaded(_)) => {
-                        info_once!("Shader not loaded.");
-                    }
+                    CachedPipelineState::Err(PipelineCacheError::ShaderNotLoaded(_)) => {}
                     CachedPipelineState::Err(err) => {
                         panic!("Initializing assets/{SHADER_ASSET_PATH}:\n{err}");
                     }
@@ -56,7 +52,6 @@ impl render_graph::Node for SimulationNode {
             }
             // once initialized, start rendering
             SimNodeState::Init => {
-                info_once!("Simulation node state: {:#?}", &self.state);
                 if let CachedPipelineState::Ok(_) =
                     pipeline_cache.get_compute_pipeline_state(pipeline.update_pipeline)
                 {
