@@ -8,7 +8,10 @@ use bevy_hui::{
 };
 use screens::*;
 
-use crate::ui::widgets::{WidgetsPlugin, slider::Slider};
+use crate::{
+    sim::SimSettings,
+    ui::widgets::{WidgetsPlugin, slider::Slider},
+};
 // use theme::*;
 // use widgets::*;
 
@@ -61,6 +64,7 @@ fn register_widgets(
     register("slider");
     register("text_input");
     register("slider_input");
+    register("sim_image");
 
     html_funcs.register(
         "on_spawn_slider_input",
@@ -93,6 +97,12 @@ fn register_widgets(
             });
         },
     );
+    html_funcs.register(
+        "init_sim_image",
+        |In(entity), mut settings: ResMut<SimSettings>| {
+            settings.parent_node = Some(entity);
+        },
+    )
 }
 
 #[derive(Event, Reflect, Debug)]

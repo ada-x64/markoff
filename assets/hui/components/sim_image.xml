@@ -1,0 +1,9 @@
+<template>
+    <image
+        id="sim_image"
+        on_spawn="init_sim_image"
+        image_mode="stretch"
+        width="512px"
+        height="512px"
+    />
+</template>

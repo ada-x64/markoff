@@ -111,7 +111,7 @@ pub struct SimImages {
 fn init_images(
     mut commands: Commands,
     mut images: ResMut<Assets<Image>>,
-    use_compute: Res<UseCompute>,
+    // use_compute: Res<UseCompute>,
     settings: Res<SimSettings>,
 ) {
     let (asset_usage, format) = if cfg!(feature = "compute_shaders") {
@@ -152,27 +152,18 @@ pub struct SimSprite;
 pub fn spawn_sprite(
     mut commands: Commands,
     images: Res<SimImages>,
-    assets: Res<Assets<Image>>,
     settings: Res<SimSettings>,
+    mut image_nodes: Query<&mut ImageNode>,
 ) {
-    let handle = &images.texture_a;
-    let img = assets.get(handle.id()).unwrap();
-    let entity = commands
-        .spawn((
-            Node {
-                width: Val::Px(img.width() as f32),
-                height: Val::Px(img.height() as f32),
-                ..Default::default()
-            },
-            Outline::new(Val::Px(2.), Val::Px(2.), Color::srgb(1., 0., 0.)),
-            children![(SimSprite, ImageNode::new(handle.clone()),)],
-        ))
-        .id();
     if let Some(parent_node) = settings.parent_node {
+        let mut parent = image_nodes
+            .get_mut(parent_node)
+            .expect("Could not get parent node!");
+        parent.image = images.texture_a.clone();
         commands
             .get_entity(parent_node)
-            .expect("parent_node")
-            .add_child(entity);
+            .expect("get_entity")
+            .insert(SimSprite);
     }
 }
 pub fn cleanup(mut commands: Commands, query: Single<Entity, With<SimSprite>>) {

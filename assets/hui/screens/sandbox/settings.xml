@@ -24,7 +24,7 @@
             text="Simulation speed
 !!Warning: Setting this too high might crash the app or your whole session!!"
         />
-    <button>
+    <button on_press="apply_settings">
         <text>Apply</text>
     </button>
 </node>

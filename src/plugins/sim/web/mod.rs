@@ -6,14 +6,8 @@ use bevy::{prelude::*, tasks::ComputeTaskPool};
 
 use crate::{
     cells::types::{CellCondition, CellResult},
-    sim::{SimImages, SimSprite, SimState, UseCompute, spawn_sprite},
+    sim::{SimImages, SimSettings, SimSprite, SimState, spawn_sprite},
 };
-
-pub const DISPLAY_FACTOR: u32 = 8;
-pub const IMG_SIZE: u32 = 512;
-pub const SIM_SIZE: u32 = IMG_SIZE / DISPLAY_FACTOR;
-pub const NUM_WORKGROUPS: usize = 8;
-pub const CHUNK_SIZE: usize = (SIM_SIZE / NUM_WORKGROUPS as u32) as usize;
 
 type PixelColor<'a> = &'a [u8; 4];
 const BLACK: PixelColor = &[0, 0, 0, 255];
@@ -97,20 +91,21 @@ fn draw(
 
     let current_img = images.get(sprite.image.id()).expect("current_img");
     let size = current_img.size();
+    let area = size.x * size.y;
     let read_lock = Arc::new(RwLock::new(current_img));
 
     // NOTE: This is spawning and closing threads every frame.
     // Would be better to use a consistent threadpool and pass messages.
-    let num_chunks = (size.x * size.y) / CHUNK_SIZE as u32;
     let pool = ComputeTaskPool::get();
+    let num_chunks = pool.thread_num() as u32;
+    let chunk_size = area / num_chunks;
     pool.scope(|scope| {
         for chunk_idx in 0..num_chunks {
             let read_lock = read_lock.clone();
             let write_lock = write_lock.clone();
             scope.spawn(async move {
                 let read_lock = read_lock.read().unwrap();
-                let size = read_lock.size();
-                let mut iterator = (0..size.x * size.y).map(|i| {
+                let mut iterator = (0..area).map(|i| {
                     let bytes = read_lock
                         .pixel_bytes(UVec3::new(i % size.x, i / size.y, 0))
                         .expect("pixel_bytes")
@@ -122,9 +117,9 @@ fn draw(
                     (i, bytes)
                 });
                 iterator
-                    .advance_by(chunk_idx as usize * CHUNK_SIZE)
+                    .advance_by(( chunk_idx * chunk_size ) as usize)
                     .expect("advance_by");
-                let chunk = iterator.next_chunk::<CHUNK_SIZE>().expect("next_chunk");
+                let chunk = (0..chunk_size).map(|_| iterator.next().expect("outside of range"));
                 let colors = chunk.map(|(i, cell)| {
                     let i = i as i32;
                     let w = size.x as i32;
@@ -138,7 +133,7 @@ fn draw(
                         if i < 0 {
                             BLACK
                         } else {
-                            let bytes = read_lock.pixel_bytes(UVec3::new(i as u32 % SIM_SIZE, i as u32 / SIM_SIZE, 0))
+                            let bytes = read_lock.pixel_bytes(UVec3::new(i as u32 % size.x, i as u32 / size.y, 0))
                                 .unwrap_or(BLACK);
                             bytes.as_array::<4>().expect("cast to array")
                         }
@@ -152,7 +147,6 @@ fn draw(
                     };
                     (i, color)
                 });
-                drop(read_lock);
                 let mut write_lock = write_lock.lock().unwrap();
                 let data = write_lock.data.as_mut().expect("data");
                 colors.into_iter().for_each(|(i, color)| {

@@ -47,6 +47,12 @@ fn register(
             sim_state.set(SimState::Init);
         },
     );
+    html_funcs.register(
+        "apply_settings",
+        |In(entity), mut sim_state: ResMut<NextState<SimState>>| {
+            sim_state.set(SimState::Init);
+        },
+    )
 }
 
 #[hot]
