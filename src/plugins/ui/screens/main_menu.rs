@@ -3,14 +3,22 @@ use bevy_hui::prelude::*;
 
 use crate::ui::screens::{CurrentScreen, ScreenMarker};
 
-pub fn render(mut commands: Commands, server: Res<AssetServer>) {
+pub struct MainMenuScreenPlugin;
+impl Plugin for MainMenuScreenPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Startup, register)
+            .add_systems(OnEnter(CurrentScreen::MainMenu), render);
+    }
+}
+
+fn render(mut commands: Commands, server: Res<AssetServer>) {
     commands.spawn((
         ScreenMarker,
         HtmlNode(server.load("hui/screens/main_menu.xml")),
     ));
 }
 
-pub fn register(mut cmds: Commands, mut html_comps: HtmlComponents, mut html_funcs: HtmlFunctions) {
+fn register(mut html_funcs: HtmlFunctions) {
     // html_comps.register("hui/screens/main_menu/...")
     html_funcs.register(
         "goto_game_settings",

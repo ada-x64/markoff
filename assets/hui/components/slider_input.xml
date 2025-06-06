@@ -1,0 +1,58 @@
+<template>
+    <property name="name" />
+    <property name="slider_name" />
+    <property name="text_name" />
+    <property name="placeholder" />
+    <property name="text" />
+    <property name="axis" />
+    <property name="width" />
+    <property name="height" />
+    <property name="button_size" />
+    <node
+        on_spawn="on_spawn_slider_input"
+        border="0 0 1px 0"
+        border_color="#fff"
+        padding="5px"
+        margin="10px"
+        display="flex"
+        flex_direction="column"
+        width="{width}"
+        height="{height}"
+        tag:name="{name}"
+    >
+        <!-- title -->
+        <text>{text}</text>
+        <!-- input text -->
+        <node display="flex" flex_direction="row">
+            <button
+                on_spawn="{on_spawn}"
+                target="text_value"
+                tag:filter="text"
+                background="#222"
+                border="2px"
+                min_height="40px"
+                border_color="#555"
+                padding="5px"
+                active:border_color="#FFF"
+            >
+                <text tag:name="{text_name}" font_size="20">{placeholder}</text>
+            </button>
+        </node>
+        <!-- slider -->
+        <node
+            tag:name="{slider_name}"
+            on_spawn="init_slider"
+            tag:axis="{axis}"
+            width="{width}"
+            height="{height}"
+            background="#000"
+        >
+            <button
+                background="#FFF"
+                position="absolute"
+                width="{button_size}"
+                height="{button_size}"
+            />
+        </node>
+    </node>
+</template>

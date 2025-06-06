@@ -6,6 +6,7 @@ use bevy::{
         render_resource::{Extent3d, TextureDimension, TextureFormat, TextureUsages},
     },
 };
+use derivative::Derivative;
 
 use crate::{
     sim::{
@@ -50,11 +51,16 @@ pub enum SimState {
 // }
 
 // Intialized through the UI.
-#[derive(Resource, Clone, Default, Debug, PartialEq)]
+#[derive(Resource, Clone, Debug, PartialEq, Derivative)]
+#[derivative(Default)]
 pub struct SimSettings {
     pub teams: Vec<Team>,
     pub players: Vec<Player>,
     pub parent_node: Option<Entity>,
+    #[derivative(Default(value = "32"))]
+    pub size: u32, // Must be a power of 2.
+    #[derivative(Default(value = "10"))]
+    pub speed: u32, // fps
 }
 
 #[derive(Resource, Clone, Default, Debug, PartialEq, Deref, DerefMut, ExtractResource)]
@@ -106,6 +112,7 @@ fn init_images(
     mut commands: Commands,
     mut images: ResMut<Assets<Image>>,
     use_compute: Res<UseCompute>,
+    settings: Res<SimSettings>,
 ) {
     let (asset_usage, format) = if cfg!(feature = "compute_shaders") {
         // !NB! compute shader should reflect this
@@ -116,16 +123,10 @@ fn init_images(
             TextureFormat::Rgba8UnormSrgb,
         )
     };
-    let size = if use_compute.0 {
-        // native::SIM_SIZE
-        512 // TEMP
-    } else {
-        web::SIM_SIZE
-    };
     let mut image = Image::new_fill(
         Extent3d {
-            width: size,
-            height: size,
+            width: settings.size,
+            height: settings.size,
             depth_or_array_layers: 1,
         },
         TextureDimension::D2,

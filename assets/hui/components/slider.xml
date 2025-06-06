@@ -1,0 +1,23 @@
+<template>
+    <property name="axis">x</property>
+    <property name="width">255px</property>
+    <property name="height">20px</property>
+    <property name="button_width">20px</property>
+    <property name="button_height">20px</property>
+    <property name="name" />
+    <node
+        tag:name="{name}"
+        on_spawn="init_slider"
+        tag:axis="{axis}"
+        width="{width}"
+        height="{height}"
+        background="#000"
+    >
+        <button
+            background="#FFF"
+            position="absolute"
+            width="{button_width}"
+            height="{button_height}"
+        />
+    </node>
+</template>

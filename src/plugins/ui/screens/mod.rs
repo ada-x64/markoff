@@ -1,6 +1,7 @@
 use bevy::prelude::*;
-use bevy_hui::prelude::HtmlNode;
 use strum::{EnumIter, IntoEnumIterator};
+
+use crate::ui::screens::{main_menu::MainMenuScreenPlugin, sandbox::SandboxScreenPlugin};
 
 // pub mod main_loop;
 pub mod main_menu;
@@ -33,9 +34,8 @@ impl Plugin for ScreensPlugin {
     fn build(&self, app: &mut App) {
         let _ = {
             app.init_state::<CurrentScreen>()
-                .add_systems(Startup, (main_menu::register, sandbox::register))
-                .add_systems(OnEnter(CurrentScreen::MainMenu), main_menu::render)
-                .add_systems(OnEnter(CurrentScreen::Sandbox), sandbox::render)
+                .add_plugins(MainMenuScreenPlugin)
+                .add_plugins(SandboxScreenPlugin)
         };
         for screen in CurrentScreen::iter() {
             app.add_systems(OnExit(screen), cleanup_screen);

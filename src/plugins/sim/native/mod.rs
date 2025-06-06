@@ -18,6 +18,7 @@ use crate::sim::{SimImages, SimRenderState, SimSprite, SimState, UseCompute};
 
 pub const DISPLAY_FACTOR: u32 = 1;
 pub const IMG_SIZE: u32 = 512;
+// TODO: Replace with SimSize setting
 pub const SIM_SIZE: u32 = IMG_SIZE / DISPLAY_FACTOR;
 pub const WORKGROUP_SIZE: u32 = 8; // workgroup = num threads
 pub const SHADER_ASSET_PATH: &str = "shader/simulation.wgsl";

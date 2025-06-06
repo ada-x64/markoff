@@ -20,6 +20,7 @@ tracing = { version = "0.1", features = [
 bevy_dylib = { version = "0.16.0-rc.5" }
 bevy_hui = "0.4.0"
 bevy_hui_widgets = "0.3.0"
+derivative = "2.2.0"
 
 [features]
 default = ["dev"]

@@ -1,0 +1,35 @@
+<template>
+<node
+        grid_column="start(1)"
+        grid_row="start(2)"
+        width="100%"
+        height="100%"
+        display="flex"
+        flex_direction="column"
+    >
+    <slider_input
+            name="sim_size"
+            slider_name="sim_size_slider"
+            placeholder="px"
+            text_name="sim_size_text"
+            axis="x"
+            text="Simulation size"
+            width="100%"
+            height="100px"
+            button_size="20px"
+        />
+    <!-- <slider_input
+            name="sim_speed"
+            slider_name="sim_speed_slider"
+            text_name="sim_speed_text"
+            default_text="fps"
+            text="Simulation speed"
+            width="100%"
+            height="100px"
+        /> -->
+
+    <button>
+        <text>Apply</text>
+    </button>
+</node>
+</template>
