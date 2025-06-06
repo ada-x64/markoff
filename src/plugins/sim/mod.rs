@@ -52,35 +52,20 @@ pub enum SimState {
 // Intialized through the UI.
 #[derive(Resource, Clone, Default, Debug, PartialEq)]
 pub struct SimSettings {
-    teams: Vec<Team>,
-    players: Vec<Player>,
+    pub teams: Vec<Team>,
+    pub players: Vec<Player>,
+    pub parent_node: Option<Entity>,
 }
 
 #[derive(Resource, Clone, Default, Debug, PartialEq, Deref, DerefMut, ExtractResource)]
 pub struct UseCompute(pub bool);
-
-#[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
-pub enum SimSystems {
-    Shader,
-    Software,
-}
 
 pub struct SimPlugin;
 impl Plugin for SimPlugin {
     fn build(&self, app: &mut App) {
         let _ = {
             app.add_plugins(SoftwareSimPlugin)
-                // <TEMP>
-                .insert_resource(SimSettings {
-                    teams: vec![Team {
-                        color: [255, 0, 0, 255],
-                        id: 0,
-                        name: "the team".into(),
-                        players: vec![],
-                    }],
-                    players: vec![],
-                })
-                // </TEMP>
+                .init_resource::<SimSettings>()
                 .init_resource::<UseCompute>()
                 // .init_resource::<SimRenderState>()
                 // .add_plugins(ShaderSimPlugin)
@@ -163,18 +148,31 @@ fn init_images(
 #[derive(Component)]
 pub struct SimSprite;
 
-pub fn spawn_sprite(mut commands: Commands, images: Res<SimImages>, assets: Res<Assets<Image>>) {
+pub fn spawn_sprite(
+    mut commands: Commands,
+    images: Res<SimImages>,
+    assets: Res<Assets<Image>>,
+    settings: Res<SimSettings>,
+) {
     let handle = &images.texture_a;
     let img = assets.get(handle.id()).unwrap();
-    commands.spawn((
-        Node {
-            width: Val::Px(img.width() as f32),
-            height: Val::Px(img.height() as f32),
-            ..Default::default()
-        },
-        Outline::new(Val::Px(2.), Val::Px(2.), Color::srgb(1., 0., 0.)),
-        children![(SimSprite, ImageNode::new(handle.clone()),)],
-    ));
+    let entity = commands
+        .spawn((
+            Node {
+                width: Val::Px(img.width() as f32),
+                height: Val::Px(img.height() as f32),
+                ..Default::default()
+            },
+            Outline::new(Val::Px(2.), Val::Px(2.), Color::srgb(1., 0., 0.)),
+            children![(SimSprite, ImageNode::new(handle.clone()),)],
+        ))
+        .id();
+    if let Some(parent_node) = settings.parent_node {
+        commands
+            .get_entity(parent_node)
+            .expect("parent_node")
+            .add_child(entity);
+    }
 }
 pub fn cleanup(mut commands: Commands, query: Single<Entity, With<SimSprite>>) {
     commands.get_entity(query.entity()).unwrap().despawn();

@@ -3,23 +3,30 @@
         display="grid"
         width="100vw"
         height="100vh"
-        grid_template_rows="32px auto 32px"
-        grid_template_columns="15% 70% 15%"
+        grid_template_rows="(1, 32px)(1, auto)(1, 32px)"
+        grid_template_columns="(1, 15%)(1, 70%)(1, 15%)"
     >
-    <row grid_row="start(1)" grid_column="start_span(1,3)">
+    <node grid_row="start(1)" grid_column="start_span(1,3)">
         <text>"top row"</text>
-    </row>
-    <column grid_column="start(1)" grid_row="start(2)">
-        <text>left column</text>
-    </column>
-    <column grid_column="start(2)" grid_row="start(2)">
-        <text>center column</text>
-    </column>
-    <column grid_column="start(3)" grid_row="start(2)">
+    </node>
+    <node grid_column="start(1)" grid_row="start(2)">
+
+    </node>
+    <node
+            border="1px"
+            border_color="#000"
+            border_radius="4px"
+            grid_column="start(2)"
+            grid_row="start(2)"
+            on_spawn="load_sim"
+        >
+
+    </node>
+    <node grid_column="start(3)" grid_row="start(2)">
         <text>right column</text>
-    </column>
-    <row grid_row="start(3)" grid_column="start_span(1,3)">
+    </node>
+    <node grid_row="start(3)" grid_column="start_span(1,3)">
         <text>"bottom row"</text>
-    </row>
+    </node>
     </node>
 </template>

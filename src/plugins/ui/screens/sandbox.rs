@@ -1,7 +1,10 @@
 use bevy::prelude::*;
 use bevy_hui::prelude::*;
 
-use crate::ui::screens::{CurrentScreen, ScreenMarker};
+use crate::{
+    sim::{SimSettings, SimState},
+    ui::screens::{CurrentScreen, ScreenMarker},
+};
 
 pub fn render(mut commands: Commands, server: Res<AssetServer>) {
     commands.spawn((
@@ -11,5 +14,13 @@ pub fn render(mut commands: Commands, server: Res<AssetServer>) {
 }
 
 pub fn register(mut cmds: Commands, mut html_comps: HtmlComponents, mut html_funcs: HtmlFunctions) {
-    //...
+    html_funcs.register(
+        "load_sim",
+        |In(entity),
+         mut sim_state: ResMut<NextState<SimState>>,
+         mut settings: ResMut<SimSettings>| {
+            settings.parent_node = Some(entity);
+            sim_state.set(SimState::Init);
+        },
+    )
 }
