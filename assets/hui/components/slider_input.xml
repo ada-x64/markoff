@@ -46,6 +46,7 @@
             width="100%"
             background="#000"
             target="text_value"
+            padding="5px"
         >
             <button
                 background="#FFF"

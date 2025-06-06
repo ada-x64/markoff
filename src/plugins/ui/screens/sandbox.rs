@@ -74,7 +74,12 @@ fn on_slider_input_change(
             settings.size = value;
             text.0 = value.to_string() + "px";
             // would like it to snap but this is good enough
-            info!("sim_size: {value}");
+        }
+        "sim_speed_slider" => {
+            let value = ((slider.value * 11.) as u32) * 5 + 5;
+            settings.speed = value;
+            text.0 = value.to_string() + "fps";
+            // would like it to snap but this is good enough
         }
         _ => {
             warn!("Unknown name {name}")

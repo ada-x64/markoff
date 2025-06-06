@@ -126,7 +126,7 @@ fn update_drag(
                             _ => 0.,
                         };
 
-                        let max_pos = slider_computed.unrounded_size().x
+                        let max_pos = (slider_computed.unrounded_size().x)
                             * slider_computed.inverse_scale_factor()
                             - nob_computed.unrounded_size().x * nob_computed.inverse_scale_factor();
 

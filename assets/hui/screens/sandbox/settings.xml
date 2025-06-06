@@ -6,24 +6,24 @@
         height="100%"
         display="flex"
         flex_direction="column"
+        border="1px"
+        border_color="#000"
     >
     <slider_input
             name="sim_size"
             text_name="sim_size_text"
             slider_name="sim_size_slider"
-            placeholder="px"
+            placeholder="32px"
             text="Simulation size"
         />
-    <!-- <slider_input
+    <slider_input
             name="sim_speed"
-            slider_name="sim_speed_slider"
             text_name="sim_speed_text"
-            default_text="fps"
-            text="Simulation speed"
-            width="100%"
-            height="100px"
-        /> -->
-
+            slider_name="sim_speed_slider"
+            placeholder="5fps"
+            text="Simulation speed
+!!Warning: Setting this too high might crash the app or your whole session!!"
+        />
     <button>
         <text>Apply</text>
     </button>
