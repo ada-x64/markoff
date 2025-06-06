@@ -6,10 +6,9 @@ use bevy_hui::{
     HuiPlugin,
     prelude::{HtmlComponents, HtmlFunctions, Tags, TemplateProperties, TemplateScope},
 };
-use bevy_hui_widgets::prelude::Slider;
 use screens::*;
 
-use crate::ui::widgets::WidgetsPlugin;
+use crate::ui::widgets::{WidgetsPlugin, slider::Slider};
 // use theme::*;
 // use widgets::*;
 
@@ -66,7 +65,7 @@ fn register_widgets(
     html_funcs.register(
         "on_spawn_slider_input",
         |In(entity), mut commands: Commands, tags: Query<&Tags>| {
-            let Some(name) = tags.get(entity).ok().and_then(|tags| tags.get("p_name")) else {
+            let Some(name) = tags.get(entity).ok().and_then(|tags| tags.get("name")) else {
                 warn!("Could not get entity name! {entity}");
                 return;
             };
@@ -82,11 +81,13 @@ fn register_widgets(
     );
     html_funcs.register(
         "notify_slider_update",
-        |In(entity), sliders: Query<&Slider>, mut event_writer: EventWriter<SliderChangedEvent>| {
+        |In(entity), sliders: Query<&Slider>, mut commands: Commands| {
             let Ok(slider) = sliders.get(entity) else {
+                warn!("Could not get slider!");
                 return;
             };
-            event_writer.write(SliderChangedEvent {
+            // Should this be on the entity? Would require getting it at spawn time.
+            commands.trigger(SliderChangedEvent {
                 slider_entity: entity,
                 value: slider.value,
             });

@@ -4,10 +4,6 @@
     <property name="text_name" />
     <property name="placeholder" />
     <property name="text" />
-    <property name="axis" />
-    <property name="width" />
-    <property name="height" />
-    <property name="button_size" />
     <node
         on_spawn="on_spawn_slider_input"
         border="0 0 1px 0"
@@ -16,8 +12,7 @@
         margin="10px"
         display="flex"
         flex_direction="column"
-        width="{width}"
-        height="{height}"
+        width="100%"
         tag:name="{name}"
     >
         <!-- title -->
@@ -25,7 +20,7 @@
         <!-- input text -->
         <node display="flex" flex_direction="row">
             <button
-                on_spawn="{on_spawn}"
+                on_spawn="on_spawn_text_input"
                 target="text_value"
                 tag:filter="text"
                 background="#222"
@@ -35,23 +30,28 @@
                 padding="5px"
                 active:border_color="#FFF"
             >
-                <text tag:name="{text_name}" font_size="20">{placeholder}</text>
+                <text
+                    id="text_value"
+                    tag:name="{text_name}"
+                    font_size="20"
+                >{placeholder}</text>
             </button>
         </node>
         <!-- slider -->
         <node
             tag:name="{slider_name}"
             on_spawn="init_slider"
-            tag:axis="{axis}"
-            width="{width}"
-            height="{height}"
+            on_change="notify_slider_update"
+            tag:axis="x"
+            width="100%"
             background="#000"
+            target="text_value"
         >
             <button
                 background="#FFF"
                 position="absolute"
-                width="{button_size}"
-                height="{button_size}"
+                width="10px"
+                height="10px"
             />
         </node>
     </node>

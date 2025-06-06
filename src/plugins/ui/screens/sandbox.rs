@@ -5,7 +5,7 @@ use bevy_simple_subsecond_system::hot;
 use crate::{
     sim::{SimSettings, SimState},
     ui::{
-        SliderChangedEvent, SliderInput,
+        Slider, SliderChangedEvent,
         screens::{CurrentScreen, ScreenMarker},
     },
 };
@@ -52,44 +52,32 @@ fn register(
 #[hot]
 fn on_slider_input_change(
     trigger: Trigger<SliderChangedEvent>,
-    sliders: Query<&mut SliderInput>,
+    sliders: Query<(&Slider, &UiTarget, &Tags)>,
     mut settings: ResMut<SimSettings>,
-    tags: Query<(Entity, &Tags)>,
-    // targets: Query<&UiTarget>,
     mut texts: Query<&mut Text>,
 ) {
-    let Ok(slider) = sliders.get(trigger.slider_entity) else {
+    let Ok((slider, target, tags)) = sliders.get(trigger.slider_entity) else {
         warn!("Could not get slider! Trigger: {trigger:?}");
         return;
     };
-    let Ok((_, slider_input_tags)) = tags.get(trigger.slider_entity) else {
-        warn!("Could not get tags! Trigger: {trigger:?}");
+    let Ok(mut text) = texts.get_mut(target.0) else {
+        warn!("Could not get text from entity {target:?}\nTrigger: {trigger:?}");
         return;
     };
-    let Some(name) = slider_input_tags.get("p_name") else {
-        warn!("Could not get name! Trigger: {trigger:?}");
+    let Some(name) = tags.get("name") else {
+        warn!("Missing name tag");
         return;
     };
-    let Some(text_entity) = tags
-        .iter()
-        .find_map(|tags| (tags.1.get(name)? == &format!("{name}_text")).then_some(tags.0))
-    else {
-        warn!("Could not get text tags! Trigger: {trigger:?}");
-        return;
-    };
-    let Ok(mut text) = texts.get_mut(text_entity) else {
-        warn!("Could not get text from entity {text_entity:?}\nTrigger: {trigger:?}");
-        return;
-    };
-    match &*slider.name {
-        "sim_size" => {
+    match name.as_str() {
+        "sim_size_slider" => {
             let value = u32::pow(2, (5. + slider.value * 4.).round() as u32);
             settings.size = value;
             text.0 = value.to_string() + "px";
+            // would like it to snap but this is good enough
             info!("sim_size: {value}");
         }
         _ => {
-            warn!("Unknown slider id {}", slider.name);
+            warn!("Unknown name {name}")
         }
     }
 }
