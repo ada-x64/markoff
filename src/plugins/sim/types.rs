@@ -1,4 +1,3 @@
-use crate::cells::types::*;
 use bevy::prelude::*;
 
 pub type TeamID = u8;
@@ -15,5 +14,20 @@ pub struct Team {
 pub struct Player {
     pub id: PlayerID,
     pub name: String,
-    pub seeds: Vec<Seed>,
+}
+
+/// Used to check cell state
+#[derive(Debug, PartialEq, Eq, Copy, Clone, Default)]
+pub enum CellCondition {
+    #[default]
+    Empty,
+    Active,
+    Owned,
+    Enemy,
+}
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
+pub enum CellResult {
+    Empty,
+    Active,
+    Untouched,
 }

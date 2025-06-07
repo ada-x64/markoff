@@ -5,7 +5,7 @@ use bevy_hui_widgets::prelude::*;
 
 use bevy_hui::{
     HuiPlugin,
-    prelude::{HtmlComponents, HtmlFunctions, Tags, TemplateProperties, TemplateScope},
+    prelude::{HtmlComponents, HtmlFunctions},
 };
 use screens::*;
 
@@ -76,27 +76,6 @@ fn register_widgets(
     register("option");
 
     html_funcs.register(
-        "on_spawn_slider_input",
-        |In(entity), mut commands: Commands, tags: Query<&Tags>| {
-            let Some(tags) = tags.get(entity).ok() else {
-                warn!("Could not get tags! {entity}");
-                return;
-            };
-            let Some(name) = tags.get("name") else {
-                warn!("Could not get entity name! {entity}");
-                return;
-            };
-            let Ok(mut cmds) = commands.get_entity(entity) else {
-                warn!("Could not get entity for slider_input with name {name}!");
-                return;
-            };
-            cmds.insert(SliderInput {
-                value: 0.,
-                name: name.clone(),
-            });
-        },
-    );
-    html_funcs.register(
         "notify_slider_update",
         |In(entity), sliders: Query<&Slider>, mut commands: Commands| {
             let Ok(slider) = sliders.get(entity) else {
@@ -123,10 +102,4 @@ fn register_widgets(
 pub struct SliderChangedEvent {
     pub slider_entity: Entity,
     pub value: f32,
-}
-
-#[derive(Component, Debug, Clone)]
-pub struct SliderInput {
-    pub value: f32,
-    pub name: String,
 }

@@ -8,17 +8,13 @@ use bevy::{
 };
 use derivative::Derivative;
 
-use crate::{
-    sim::{
-        // native::{ShaderSimPlugin, ShaderSimSet},
-        web::{SoftwareSimPlugin, SoftwareSimSet},
-    },
-    teams::types::{Player, Team},
-};
+use types::*;
 
+use crate::sim::web::SoftwareSimSet;
 // TODO: This is crashing!
 // But we have bigger fish to fry right now.
 // mod native;
+mod types;
 mod web;
 
 #[derive(States, Default, Debug, PartialEq, Eq, Hash, Copy, Clone)]
@@ -102,7 +98,7 @@ pub struct SimPlugin;
 impl Plugin for SimPlugin {
     fn build(&self, app: &mut App) {
         let _ = {
-            app.add_plugins(SoftwareSimPlugin)
+            app.add_plugins(web::SoftwareSimPlugin)
                 .insert_resource(SimSettings {
                     teams: vec![
                         Team {

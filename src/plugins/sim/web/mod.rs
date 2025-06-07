@@ -4,9 +4,9 @@ use std::sync::{Arc, Mutex, RwLock};
 
 use bevy::{prelude::*, tasks::ComputeTaskPool};
 
-use crate::{
-    cells::types::{CellCondition, CellResult},
-    sim::{SimImages, SimSettings, SimSprite, SimState, spawn_sprite},
+use crate::sim::{
+    SimImages, SimSettings, SimSprite, SimState, spawn_sprite,
+    types::{CellCondition, CellResult},
 };
 
 pub type PixelColor<'a> = &'a [u8; 4];
