@@ -12,12 +12,13 @@ log = { version = "0.4", features = [
     "release_max_level_warn",
 ] }
 rand = "0.9.1"
+getrandom = "0.3"
 strum = { version = "0.27.1", features = ["derive"] }
 tracing = { version = "0.1", features = [
     "max_level_debug",
     "release_max_level_warn",
 ] }
-bevy_dylib = { version = "0.16.0-rc.5" }
+bevy_dylib = { version = "0.16.0-rc.5", optional = true }
 bevy_hui = "0.4.0"
 bevy_hui_widgets = "0.3.0"
 derivative = "2.2.0"
@@ -26,9 +27,11 @@ anyhow = "1.0.98"
 
 [features]
 default = ["dev"]
-dev_native = ["dev", "compute_shaders"]
-dev_web = ["dev"]
-dev = ["bevy/bevy_dev_tools", "bevy/dynamic_linking"]
+dev = ["bevy/bevy_dev_tools"]
+dev_native = ["dev", "native", "bevy/dynamic_linking", "bevy_dylib"]
+dev_web = ["dev", 'web']
+web = ["getrandom/wasm_js"]
+native = ["compute_shaders"]
 compute_shaders = []
 
 ### METADATA AND LINTS ########################################################

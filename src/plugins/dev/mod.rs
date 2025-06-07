@@ -15,7 +15,7 @@ impl Plugin for DevPlugin {
         app.add_systems(Update, watch_key_presses)
             .add_plugins(FpsOverlayPlugin {
                 config: FpsOverlayConfig {
-                    enabled: true,
+                    enabled: false,
                     text_color: basic::RED.into(),
                     ..Default::default()
                 },
