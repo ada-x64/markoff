@@ -1,12 +1,12 @@
 use bevy::prelude::*;
 use bevy_hui::prelude::*;
-use bevy_simple_subsecond_system::hot;
 
 use crate::{
-    sim::{SimSettings, SimState},
+    sim::{SimLayout, SimSettings, SimState},
     ui::{
         Slider, SliderChangedEvent,
         screens::{CurrentScreen, ScreenMarker},
+        widgets::select::{SelectInput, SelectionChangedEvent},
     },
 };
 
@@ -14,6 +14,7 @@ pub struct SandboxScreenPlugin;
 impl Plugin for SandboxScreenPlugin {
     fn build(&self, app: &mut App) {
         app.add_observer(on_slider_input_change)
+            .add_observer(on_select_change)
             .add_systems(Startup, register)
             .add_systems(OnEnter(CurrentScreen::Sandbox), render);
     }
@@ -49,13 +50,60 @@ fn register(
     );
     html_funcs.register(
         "apply_settings",
-        |In(entity), mut sim_state: ResMut<NextState<SimState>>| {
+        |In(_entity), mut sim_state: ResMut<NextState<SimState>>| {
             sim_state.set(SimState::Init);
         },
-    )
+    );
+    html_funcs.register(
+        "on_select_layout",
+        |In(entity), selects: Query<&SelectInput>, mut settings: ResMut<SimSettings>| {
+            let Ok(select) = selects.get(entity) else {
+                warn!("Could not get select {entity}");
+                return;
+            };
+            let Ok(layout) = SimLayout::try_from(&select.value) else {
+                warn!("Unknown layout {}", select.value);
+                return;
+            };
+            settings.layout = layout;
+        },
+    );
 }
 
-#[hot]
+fn on_select_change(
+    trigger: Trigger<SelectionChangedEvent>,
+    selects: Query<&SelectInput>,
+    tags: Query<&Tags>,
+    mut settings: ResMut<SimSettings>,
+) {
+    info!("on-select-change");
+    let event = trigger.event();
+    let Some(select) = selects.get(event.select).ok() else {
+        warn!("couldnt' get select");
+        return;
+    };
+    let Some(name) = tags
+        .get(event.select)
+        .ok()
+        .and_then(|tags| tags.get("name"))
+    else {
+        warn!("Couldn't get tags");
+        return;
+    };
+    match name.as_str() {
+        "layout_select" => {
+            let Ok(layout) = SimLayout::try_from(&select.value) else {
+                warn!("Unknown layout {}", select.value);
+                return;
+            };
+            settings.layout = layout;
+        }
+        _ => {
+            warn!("Unknown select: {name}")
+        }
+    }
+}
+
 fn on_slider_input_change(
     trigger: Trigger<SliderChangedEvent>,
     sliders: Query<(&Slider, &UiTarget, &Tags)>,
@@ -78,14 +126,17 @@ fn on_slider_input_change(
         "sim_size_slider" => {
             let value = u32::pow(2, (5. + slider.value * 4.).round() as u32);
             settings.size = value;
-            text.0 = value.to_string() + "px";
-            // would like it to snap but this is good enough
+            text.0 = value.to_string();
         }
         "sim_speed_slider" => {
             let value = ((slider.value * 11.) as u32) * 5 + 5;
-            settings.speed = value;
-            text.0 = value.to_string() + "fps";
-            // would like it to snap but this is good enough
+            settings.timestep = value;
+            text.0 = value.to_string();
+        }
+        "sim_steps_slider" => {
+            let value = ((slider.value * 99.) as u32) * 10 + 10;
+            settings.steps_per_turn = value;
+            text.0 = value.to_string();
         }
         _ => {
             warn!("Unknown name {name}")

@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 pub mod screens;
 pub mod widgets;
+use bevy_hui_widgets::prelude::*;
 
 use bevy_hui::{
     HuiPlugin,
@@ -30,17 +31,22 @@ pub struct UiPlugin;
 impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
         let _ = {
-            app.add_plugins((ScreensPlugin, HuiPlugin, WidgetsPlugin))
-                // .init_resource::<UiAssets>()
-                .add_systems(
-                    PreStartup,
-                    |mut pick_settings: ResMut<UiPickingSettings>| {
-                        *pick_settings = UiPickingSettings {
-                            require_markers: true,
-                        }
-                    },
-                )
-                .add_systems(Startup, (spawn_camera, register_widgets))
+            app.add_plugins((
+                ScreensPlugin,
+                HuiPlugin,
+                WidgetsPlugin,
+                HuiSelectWidgetPlugin,
+            ))
+            // .init_resource::<UiAssets>()
+            .add_systems(
+                PreStartup,
+                |mut pick_settings: ResMut<UiPickingSettings>| {
+                    *pick_settings = UiPickingSettings {
+                        require_markers: true,
+                    }
+                },
+            )
+            .add_systems(Startup, (spawn_camera, register_widgets))
         };
     }
 }
@@ -65,11 +71,18 @@ fn register_widgets(
     register("text_input");
     register("slider_input");
     register("sim_image");
+    register("settings_button");
+    register("select");
+    register("option");
 
     html_funcs.register(
         "on_spawn_slider_input",
         |In(entity), mut commands: Commands, tags: Query<&Tags>| {
-            let Some(name) = tags.get(entity).ok().and_then(|tags| tags.get("name")) else {
+            let Some(tags) = tags.get(entity).ok() else {
+                warn!("Could not get tags! {entity}");
+                return;
+            };
+            let Some(name) = tags.get("name") else {
                 warn!("Could not get entity name! {entity}");
                 return;
             };

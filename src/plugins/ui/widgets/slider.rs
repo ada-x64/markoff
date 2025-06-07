@@ -83,6 +83,15 @@ fn init_slider(
         return;
     };
 
+    let value = tags
+        .get(entity)
+        .ok()
+        .and_then(|tags| {
+            tags.get("initial_position")
+                .map(|str| str.parse::<f32>().unwrap_or_default())
+        })
+        .unwrap_or_default();
+
     let axis = tags
         .get(entity)
         .ok()
@@ -92,7 +101,7 @@ fn init_slider(
         })
         .unwrap_or_default();
 
-    cmd.entity(entity).insert(Slider { value: 0., axis });
+    cmd.entity(entity).insert(Slider { value, axis });
     cmd.entity(nob_entity).insert(SliderNob { slider: entity });
 }
 

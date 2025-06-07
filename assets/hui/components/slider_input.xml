@@ -2,58 +2,63 @@
     <property name="name" />
     <property name="slider_name" />
     <property name="text_name" />
-    <property name="placeholder" />
+    <property name="default_value" />
+    <property name="initial_position">0</property>
+    <property name="unit" />
     <property name="text" />
     <node
         on_spawn="on_spawn_slider_input"
         border="0 0 1px 0"
         border_color="#fff"
-        padding="5px"
-        margin="10px"
         display="flex"
+        padding="0 20px"
+        margin="0 10px"
         flex_direction="column"
         width="100%"
         tag:name="{name}"
     >
         <!-- title -->
-        <text>{text}</text>
-        <!-- input text -->
-        <node display="flex" flex_direction="row">
-            <button
-                on_spawn="on_spawn_text_input"
+        <node>
+            <text>{text}</text>
+        </node>
+        <node display="flex" flex_direction="row"> <!-- INPUTS -->
+            <!-- input text -->
+            <node display="flex" flex_direction="row" margin="5px" width="33%">
+                <button
+                    target="text_value"
+                    tag:filter="text"
+                    background="#222"
+                    border="2px"
+                    border_color="#555"
+                    active:border_color="#FFF"
+                >
+                    <text
+                        id="text_value"
+                        tag:name="{text_name}"
+                        font_size="14"
+                    >{default_value}</text>
+                    <text font_size="14">{unit}</text>
+                </button>
+            </node>
+            <!-- slider -->
+            <node
+                tag:name="{slider_name}"
+                on_spawn="init_slider"
+                on_change="notify_slider_update"
+                tag:axis="x"
+                tag:initial_position="{initial_position}"
+                width="100%"
+                background="#000"
                 target="text_value"
-                tag:filter="text"
-                background="#222"
-                border="2px"
-                min_height="40px"
-                border_color="#555"
-                padding="5px"
-                active:border_color="#FFF"
+                margin="0 5px"
             >
-                <text
-                    id="text_value"
-                    tag:name="{text_name}"
-                    font_size="20"
-                >{placeholder}</text>
-            </button>
-        </node>
-        <!-- slider -->
-        <node
-            tag:name="{slider_name}"
-            on_spawn="init_slider"
-            on_change="notify_slider_update"
-            tag:axis="x"
-            width="100%"
-            background="#000"
-            target="text_value"
-            padding="5px"
-        >
-            <button
-                background="#FFF"
-                position="absolute"
-                width="10px"
-                height="10px"
-            />
-        </node>
+                <button
+                    background="#FFF"
+                    position="absolute"
+                    width="10px"
+                    height="10px"
+                />
+            </node>
+        </node> <!-- END INPUTS -->
     </node>
 </template>

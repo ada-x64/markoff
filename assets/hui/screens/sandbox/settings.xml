@@ -3,29 +3,54 @@
         grid_column="start(1)"
         grid_row="start(2)"
         width="100%"
-        height="100%"
         display="flex"
         flex_direction="column"
+        justify_content="space_between"
         border="1px"
         border_color="#000"
     >
-    <slider_input
-            name="sim_size"
-            text_name="sim_size_text"
-            slider_name="sim_size_slider"
-            placeholder="32px"
-            text="Simulation size"
-        />
-    <slider_input
-            name="sim_speed"
-            text_name="sim_speed_text"
-            slider_name="sim_speed_slider"
-            placeholder="5fps"
-            text="Simulation speed
-!!Warning: Setting this too high might crash the app or your whole session!!"
-        />
-    <button on_press="apply_settings">
-        <text>Apply</text>
-    </button>
-</node>
+    <node id="input_group" display="flex" flex_direction="column">
+        <node border="1px" border_color="#ffff00" margin="0px 10px">
+        <text
+                >WARNING: Setting these values too high may crash the game, or even your computer!</text>
+        </node>
+        <slider_input
+                name="sim_size"
+                text_name="sim_size_text"
+                slider_name="sim_size_slider"
+                default_value="32"
+                unit="px"
+                text="Simulation size"
+            />
+        <slider_input
+                name="sim_speed"
+                text_name="sim_speed_text"
+                slider_name="sim_speed_slider"
+                default_value="5"
+                unit="fps"
+                text="Simulation speed"
+            />
+        <slider_input
+                name="sim_steps"
+                text_name="sim_steps_text"
+                slider_name="sim_steps_slider"
+                default_value="500"
+                initial_position="0.5"
+                text="Steps per turn"
+            />
+        <node border="0 0 1px 0" border_color="#fff">
+            <text>Layout</text>
+            <select name="layout_select">
+                <option value="Random" />
+                <option value="50/50 Vertical" />
+                <option value="50/50 Horizontal" />
+                <option value="50/50 Random" />
+                <option value="Empty" />
+            </select>
+        </node>
+    </node>
+    <node display="flex" justify_content="center">
+        <settings_button text="Apply" on_press="apply_settings" />
+    </node>
+    </node>
 </template>

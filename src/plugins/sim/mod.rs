@@ -60,8 +60,40 @@ pub struct SimSettings {
     #[derivative(Default(value = "32"))]
     pub size: u32, // Must be a power of 2.
     #[derivative(Default(value = "10"))]
-    pub speed: u32, // fps
+    pub timestep: u32, // fps
+    #[derivative(Default(value = "100"))]
+    pub steps_per_turn: u32,
+    pub layout: SimLayout,
 }
+
+#[derive(Default, Debug, strum::Display, Copy, Clone, PartialEq)]
+pub enum SimLayout {
+    #[default]
+    Random,
+    #[strum(to_string = "50/50 Horizontal")]
+    Horiz5050,
+    #[strum(to_string = "50/50 Vertical")]
+    Vert5050,
+    #[strum(to_string = "50/50 Random")]
+    Rand5050,
+    Empty,
+}
+impl TryFrom<&String> for SimLayout {
+    type Error = anyhow::Error;
+    fn try_from(value: &String) -> anyhow::Result<Self> {
+        match value.to_string().as_str() {
+            "Random" => Ok(Self::Random),
+            "50/50 Horizontal" => Ok(Self::Horiz5050),
+            "50/50 Vertical" => Ok(Self::Vert5050),
+            "50/50 Random" => Ok(Self::Rand5050),
+            "Empty" => Ok(Self::Empty),
+            _ => Err(anyhow::anyhow!("No such layout")),
+        }
+    }
+}
+
+#[derive(Resource, Clone, Copy, Default, Debug, PartialEq, Deref, DerefMut, ExtractResource)]
+pub struct SimSteps(u32);
 
 #[derive(Resource, Clone, Default, Debug, PartialEq, Deref, DerefMut, ExtractResource)]
 pub struct UseCompute(pub bool);
@@ -73,12 +105,18 @@ impl Plugin for SimPlugin {
             app.add_plugins(SoftwareSimPlugin)
                 .init_resource::<SimSettings>()
                 .init_resource::<UseCompute>()
+                .init_resource::<SimSteps>()
                 // .init_resource::<SimRenderState>()
                 // .add_plugins(ShaderSimPlugin)
                 .insert_resource(Time::<Fixed>::from_hz(10.))
                 .init_state::<SimState>()
                 // .add_systems(StateTransition, set_sim_render_state)
-                .add_systems(OnEnter(SimState::Init), (init_images, spawn_sprite).chain())
+                .add_systems(
+                    OnEnter(SimState::Init),
+                    (init_images, spawn_sprite, init_timestep).chain(),
+                )
+                .add_systems(OnEnter(SimState::Running), unpause)
+                .add_systems(OnEnter(SimState::Paused), pause)
                 .add_systems(OnEnter(SimState::Closed), cleanup)
                 .configure_sets(
                     Update,
@@ -144,6 +182,18 @@ fn init_images(
         texture_a: images.add(image.clone()),
         texture_b: images.add(image),
     });
+}
+
+fn init_timestep(mut time: ResMut<Time<Fixed>>, settings: Res<SimSettings>) {
+    time.set_timestep_hz(settings.timestep as f64);
+}
+
+fn unpause(mut time: ResMut<Time<Virtual>>) {
+    time.unpause();
+}
+
+fn pause(mut time: ResMut<Time<Virtual>>) {
+    time.pause();
 }
 
 #[derive(Component)]

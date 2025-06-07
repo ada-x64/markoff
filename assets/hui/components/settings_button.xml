@@ -1,0 +1,17 @@
+<template>
+    <property name="text" />
+    <button
+        background="#333"
+        hover:background="#999"
+        pressed:background="#111"
+        padding="5px"
+        margin="15px 0 0 0"
+        border_radius="5px"
+        border_color="#fff"
+        border="2px"
+    >
+        <text font_size="14px">
+            {text}
+        </text>
+    </button>
+</template>

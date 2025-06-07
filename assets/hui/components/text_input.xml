@@ -13,6 +13,6 @@
         padding="5px"
         active:border_color="#FFF"
     >
-        <text tag:name="{name}" font_size="20">{default_text}</text>
+        <text tag:name="{name}">{default_text}</text>
     </button>
 </template>
