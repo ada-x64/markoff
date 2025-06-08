@@ -7,6 +7,6 @@
         padding="5px"
         tag:value="{value}"
     >
-        <text font_size="14">{value}</text>
+        <text font_size="12px">{value}</text>
     </button>
 </template>

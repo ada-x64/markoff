@@ -1,0 +1,15 @@
+<template>
+<node
+        grid_column="start(3)"
+        grid_row="start(2)"
+        width="100%"
+        display="flex"
+        flex_direction="column"
+        justify_content="space_between"
+        border="1px"
+        border_color="#000"
+    >
+    <node display="flex" max_height="250px" on_spawn="init_stamp_selector">
+    </node>
+</node>
+</template>

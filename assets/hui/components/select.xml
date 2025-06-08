@@ -10,7 +10,7 @@
         width="100%"
         background="#333"
     >
-        <text font_size="14">None</text>
+        <text font_size="12px">None</text>
         <node
             display="none"
             top="30px"

@@ -1,4 +1,9 @@
-use bevy::prelude::*;
+use bevy::{
+    input::mouse::{MouseScrollUnit, MouseWheel},
+    picking::hover::HoverMap,
+    prelude::*,
+    ui::RelativeCursorPosition,
+};
 pub mod screens;
 pub mod widgets;
 use bevy_hui_widgets::prelude::*;
@@ -38,15 +43,8 @@ impl Plugin for UiPlugin {
                 HuiSelectWidgetPlugin,
             ))
             // .init_resource::<UiAssets>()
-            .add_systems(
-                PreStartup,
-                |mut pick_settings: ResMut<UiPickingSettings>| {
-                    *pick_settings = UiPickingSettings {
-                        require_markers: true,
-                    }
-                },
-            )
             .add_systems(Startup, (spawn_camera, register_widgets))
+            .add_systems(Update, update_scrollable)
         };
     }
 }
@@ -64,9 +62,6 @@ fn register_widgets(
         html_comps.register(name, server.load(format!("hui/components/{name}.xml")));
     };
     register("menu_button");
-    register("grid_layout");
-    register("row");
-    register("column");
     register("slider");
     register("text_input");
     register("slider_input");
@@ -102,4 +97,26 @@ fn register_widgets(
 pub struct SliderChangedEvent {
     pub slider_entity: Entity,
     pub value: f32,
+}
+
+#[derive(Component, Default, Debug)]
+#[require(RelativeCursorPosition)]
+struct Scrollable;
+
+fn update_scrollable(
+    query: Query<(&mut ScrollPosition, &RelativeCursorPosition), With<Scrollable>>,
+    mut mw_event: EventReader<MouseWheel>,
+) {
+    for (mut scroll_pos, cursor_pos) in query {
+        if cursor_pos.mouse_over() {
+            for event in mw_event.read() {
+                let (dx, dy) = match event.unit {
+                    MouseScrollUnit::Line => (event.x * 12., event.y * 12.),
+                    MouseScrollUnit::Pixel => (event.x, event.y),
+                };
+                scroll_pos.offset_x -= dx;
+                scroll_pos.offset_y -= dy;
+            }
+        }
+    }
 }

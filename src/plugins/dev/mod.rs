@@ -3,6 +3,7 @@ use bevy::{
     dev_tools::fps_overlay::{FpsOverlayConfig, FpsOverlayPlugin},
     prelude::*,
 };
+use bevy_inspector_egui::bevy_egui::EguiPlugin;
 
 use crate::{sim::SimState, ui::screens::CurrentScreen};
 
@@ -12,14 +13,19 @@ use crate::{sim::SimState, ui::screens::CurrentScreen};
 pub struct DevPlugin;
 impl Plugin for DevPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, watch_key_presses)
-            .add_plugins(FpsOverlayPlugin {
+        app.add_systems(Update, watch_key_presses).add_plugins((
+            FpsOverlayPlugin {
                 config: FpsOverlayConfig {
                     enabled: false,
                     text_color: basic::RED.into(),
                     ..Default::default()
                 },
-            });
+            },
+            EguiPlugin {
+                enable_multipass_for_primary_context: true,
+            },
+            bevy_inspector_egui::quick::WorldInspectorPlugin::new(),
+        ));
     }
 }
 

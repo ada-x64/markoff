@@ -13,6 +13,7 @@ fn main() -> AppExit {
     app.add_plugins((
         DefaultPlugins.set(ImagePlugin::default_nearest()),
         SimpleSubsecondPlugin::default(),
+        stamps::StampPlugin,
         ui::UiPlugin,
         sim::SimPlugin,
     ));

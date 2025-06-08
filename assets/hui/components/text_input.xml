@@ -6,7 +6,7 @@
         on_spawn="{on_spawn}"
         target="text_value"
         tag:filter="text"
-        background="#222"
+        background="#333"
         border="2px"
         min_height="40px"
         border_color="#555"

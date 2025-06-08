@@ -8,10 +8,13 @@
         justify_content="space_between"
         border="1px"
         border_color="#000"
+        padding="8px"
+        background="#333"
     >
     <node id="input_group" display="flex" flex_direction="column">
-        <node border="1px" border_color="#ffff00" margin="0px 10px">
+        <node border="1px">
         <text
+                    font_color="#ffaa00"
                 >WARNING: Setting these values too high may crash the game, or even your computer!</text>
         </node>
         <slider_input
@@ -38,8 +41,13 @@
                 initial_position="0.5"
                 text="Steps per turn"
             />
-        <node border="0 0 1px 0" border_color="#fff">
-            <text>Layout</text>
+        <node
+                border="0 0 1px 0"
+                border_color="#fff"
+                display="flex"
+                align_items="center"
+            >
+            <text font_size="12px">Layout</text>
             <select name="layout_select">
                 <option value="Random" />
                 <option value="50/50 Vertical" />

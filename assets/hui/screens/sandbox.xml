@@ -3,28 +3,29 @@
         display="grid"
         width="100vw"
         height="100vh"
-        grid_template_rows="(1, 32px)(1, auto)(1, 32px)"
+        grid_template_rows="(1, 48px)(1, auto)(1, 64px)"
         grid_template_columns="(1, 15%)(1, 70%)(1, 15%)"
     >
-    <node grid_row="start(1)" grid_column="start_span(1,3)">
-        <text>"top row"</text>
-    </node>
+    <node
+            grid_row="start(1)"
+            grid_column="start_span(1,3)"
+            display="flex"
+            align_items="center"
+            padding="8px"
+        >
+        <node display="flex" justify_content="center">
+            <settings_button
+                    text="Back to main menu"
+                    on_press="goto_main_menu"
+                />
+        </node>
+        </node>
     <sandbox_settings />
     <node display="flex" justify_content="center" align_items="center">
-    <sim_image />
+        <sim_image />
     </node>
-    <!-- <node
-            border="1px"
-            border_color="#000"
-            border_radius="4px"
-            grid_column="start(2)"
-            grid_row="start(2)"
-            on_spawn="load_sim"
-        >
-    </node> -->
-    <!-- <sandbox_tools /> -->
-    <!-- <node grid_row="start(3)" grid_column="start_span(1,3)">
-        <text>"bottom row"</text>
-    </node> -->
+    <sandbox_tools />
+    <node grid_row="start(3)" grid_column="start_span(1,3)">
+    </node>
     </node>
 </template>

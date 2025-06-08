@@ -39,6 +39,7 @@ fn register(
         );
     };
     register("settings");
+    register("tools");
     html_funcs.register(
         "load_sim",
         |In(entity),
@@ -68,6 +69,12 @@ fn register(
             settings.layout = layout;
         },
     );
+    html_funcs.register(
+        "goto_main_menu",
+        |In(_), mut screen: ResMut<NextState<CurrentScreen>>| {
+            screen.set(CurrentScreen::MainMenu);
+        },
+    )
 }
 
 fn on_select_change(

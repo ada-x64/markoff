@@ -1,5 +1,0 @@
-<template>
-    <node display="flex" flex_direction="row">
-        <slot />
-    </node>
-</template>
