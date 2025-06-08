@@ -26,6 +26,12 @@ pub enum SimState {
     Running,
 }
 
+#[derive(Resource, Debug, Default)]
+pub struct SimGameplayState {
+    pub current_stamp: Option<String>,
+    pub num_steps: u32,
+}
+
 // This should probably be a component
 // #[derive(Default, Resource, ExtractResource, PartialEq, Eq, Hash, Copy, Clone)]
 // pub enum SimRenderState {
@@ -88,9 +94,6 @@ impl TryFrom<&String> for SimLayout {
     }
 }
 
-#[derive(Resource, Clone, Copy, Default, Debug, PartialEq, Deref, DerefMut, ExtractResource)]
-pub struct SimSteps(u32);
-
 #[derive(Resource, Clone, Default, Debug, PartialEq, Deref, DerefMut, ExtractResource)]
 pub struct UseCompute(pub bool);
 
@@ -117,7 +120,7 @@ impl Plugin for SimPlugin {
                     ..Default::default()
                 })
                 .init_resource::<UseCompute>()
-                .init_resource::<SimSteps>()
+                .init_resource::<SimGameplayState>()
                 // .init_resource::<SimRenderState>()
                 // .add_plugins(ShaderSimPlugin)
                 .insert_resource(Time::<Fixed>::from_hz(10.))

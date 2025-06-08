@@ -14,18 +14,18 @@ pub struct Stamps {
 }
 impl Stamps {
     pub fn get_from_size(&self, size: u32) -> &HashMap<String, Stamp> {
-        if size > 128 {
+        if size == 32 {
             &self.px32
-        } else if size > 64 {
+        } else if size == 16 {
             &self.px16
         } else {
             &self.px8
         }
     }
     pub fn get_from_size_mut(&mut self, size: u32) -> &mut HashMap<String, Stamp> {
-        if size > 128 {
+        if size == 32 {
             &mut self.px32
-        } else if size > 64 {
+        } else if size == 16 {
             &mut self.px16
         } else {
             &mut self.px8
@@ -61,7 +61,7 @@ fn init(
                     index: i,
                 },
             };
-            stamps.insert(format!("{name} ({size}px)"), stamp);
+            stamps.insert(name.to_string(), stamp);
         }
     }
 }
