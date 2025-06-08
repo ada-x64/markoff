@@ -10,12 +10,18 @@ use derivative::Derivative;
 
 use types::*;
 
-use crate::sim::web::SoftwareSimSet;
+use crate::{sim::web::SoftwareSimSet, stamps::Stamp};
 // TODO: This is crashing!
 // But we have bigger fish to fry right now.
 // mod native;
 mod types;
 mod web;
+
+#[derive(Event)]
+pub struct StampEvent {
+    stamp: Handle<Stamp>,
+    position: UVec2,
+}
 
 #[derive(States, Default, Debug, PartialEq, Eq, Hash, Copy, Clone)]
 pub enum SimState {

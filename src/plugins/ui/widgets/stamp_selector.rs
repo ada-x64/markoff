@@ -2,8 +2,8 @@ use bevy::{prelude::*, ui::RelativeCursorPosition};
 use bevy_hui::prelude::*;
 
 use crate::{
-    sim::{SimGameplayState, SimSettings},
-    stamps::Stamps,
+    sim::SimGameplayState,
+    stamps::{Stamp, Stamps},
     ui::Scrollable,
 };
 
@@ -30,6 +30,7 @@ fn init_stamp_selector(
     mut commands: Commands,
     stamps: Res<Stamps>,
     mut nodes: Query<&mut Node>,
+    stamp_assets: Res<Assets<Stamp>>,
 ) {
     // #333
     let border_color = Color::linear_rgb(3. / 16., 3. / 16., 3. / 16.);
@@ -53,6 +54,7 @@ fn init_stamp_selector(
         .id();
     let stamps = &stamps.px32;
     stamps.iter().for_each(|(name, stamp)| {
+        let stamp = stamp_assets.get(stamp).expect("stamp");
         let image_node = (
             Node {
                 display: Display::Flex,
@@ -140,5 +142,4 @@ fn wrapper_click(
     };
     sim_state.current_stamp = Some(widget.name.clone());
     widget.selected = true;
-    info!("clicked ok");
 }

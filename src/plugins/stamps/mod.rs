@@ -1,6 +1,6 @@
 use bevy::{platform::collections::HashMap, prelude::*};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Asset, Reflect)]
 pub struct Stamp {
     pub atlas: TextureAtlas,
     pub texture: Handle<Image>,
@@ -8,12 +8,12 @@ pub struct Stamp {
 
 #[derive(Resource, Clone, Debug, Default)]
 pub struct Stamps {
-    pub px8: HashMap<String, Stamp>,
-    pub px16: HashMap<String, Stamp>,
-    pub px32: HashMap<String, Stamp>,
+    pub px8: HashMap<String, Handle<Stamp>>,
+    pub px16: HashMap<String, Handle<Stamp>>,
+    pub px32: HashMap<String, Handle<Stamp>>,
 }
 impl Stamps {
-    pub fn get_from_size(&self, size: u32) -> &HashMap<String, Stamp> {
+    pub fn get_from_size(&self, size: u32) -> &HashMap<String, Handle<Stamp>> {
         if size == 32 {
             &self.px32
         } else if size == 16 {
@@ -22,7 +22,7 @@ impl Stamps {
             &self.px8
         }
     }
-    pub fn get_from_size_mut(&mut self, size: u32) -> &mut HashMap<String, Stamp> {
+    pub fn get_from_size_mut(&mut self, size: u32) -> &mut HashMap<String, Handle<Stamp>> {
         if size == 32 {
             &mut self.px32
         } else if size == 16 {
@@ -36,7 +36,9 @@ impl Stamps {
 pub struct StampPlugin;
 impl Plugin for StampPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, init).init_resource::<Stamps>();
+        app.add_systems(Startup, init)
+            .init_asset::<Stamp>()
+            .init_resource::<Stamps>();
     }
 }
 
@@ -44,6 +46,7 @@ fn init(
     assets: Res<AssetServer>,
     mut layouts: ResMut<Assets<TextureAtlasLayout>>,
     mut stamps: ResMut<Stamps>,
+    mut stamp_assets: ResMut<Assets<Stamp>>,
 ) {
     for size in [8, 16, 32] {
         let texture = assets.load(format!("sprites/stamps/{size}px.png"));
@@ -61,7 +64,8 @@ fn init(
                     index: i,
                 },
             };
-            stamps.insert(name.to_string(), stamp);
+            let handle = stamp_assets.add(stamp);
+            stamps.insert(name.to_string(), handle);
         }
     }
 }
