@@ -5,17 +5,29 @@
         width="100%"
         display="flex"
         flex_direction="column"
-        justify_content="space_between"
-        border="1px"
-        border_color="#000"
+        border="2px"
+        border_color="#999"
+        border_radius="5px"
         padding="8px"
-        background="#333"
+        background="#333a"
+        justify_content="space_between"
     >
     <node id="input_group" display="flex" flex_direction="column">
-        <node border="1px">
-        <text
-                    font_color="#ffaa00"
-                >WARNING: Setting these values too high may crash the game, or even your computer!</text>
+        <node
+                id="title"
+                display="flex"
+                flex_direction="column"
+                border="0 0 2px 0"
+                border_color="#fffc"
+            >
+            <node>
+                <text font_size="14px">Simulation settings</text>
+            </node>
+            <node padding="5px" margin="0 5px">
+                <text
+                        font_color="#ffaa00"
+                    >WARNING: Setting these values too high may crash the game, or even your computer!</text>
+            </node>
         </node>
         <slider_input
                 name="sim_size"
@@ -43,11 +55,14 @@
             />
         <node
                 border="0 0 1px 0"
-                border_color="#fff"
+                border_color="#ffffff33"
+                border="0 0 1px 0"
                 display="flex"
-                align_items="center"
+                flex_direction="column"
+                padding="5px"
+                margin="0 5px"
             >
-            <text font_size="12px">Layout</text>
+            <text font_size="12px" margin="0 8px 0 0">Layout</text>
             <select name="layout_select">
                 <option value="Random" />
                 <option value="50/50 Vertical" />
@@ -57,8 +72,8 @@
             </select>
         </node>
     </node>
-    <node display="flex" justify_content="center">
+    <node display="flex" justify_content="center" justify_self="end">
         <settings_button text="Apply" on_press="apply_settings" />
     </node>
-    </node>
+</node>
 </template>

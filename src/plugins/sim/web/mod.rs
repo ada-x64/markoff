@@ -34,7 +34,7 @@ impl Plugin for SoftwareSimPlugin {
     }
 }
 
-// populate with noise
+// populate
 fn init(
     sprite: Single<&ImageNode, With<SimSprite>>,
     mut images: ResMut<Assets<Image>>,

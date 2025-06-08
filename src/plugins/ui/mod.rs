@@ -1,6 +1,5 @@
 use bevy::{
     input::mouse::{MouseScrollUnit, MouseWheel},
-    picking::hover::HoverMap,
     prelude::*,
     ui::RelativeCursorPosition,
 };
@@ -14,23 +13,7 @@ use bevy_hui::{
 };
 use screens::*;
 
-use crate::{
-    sim::SimSettings,
-    ui::widgets::{WidgetsPlugin, slider::Slider},
-};
-// use theme::*;
-// use widgets::*;
-
-// #[derive(Resource, Debug, Clone)]
-// pub struct UiAssets {
-//     pub bg1: Handle<Image>,
-// }
-// impl FromWorld for UiAssets {
-//     fn from_world(world: &mut World) -> Self {
-//         let bg1 = world.load_asset("textures/bg1.png");
-//         Self { bg1 }
-//     }
-// }
+use crate::ui::widgets::{WidgetsPlugin, slider::Slider};
 
 pub struct UiPlugin;
 impl Plugin for UiPlugin {
@@ -42,7 +25,6 @@ impl Plugin for UiPlugin {
                 WidgetsPlugin,
                 HuiSelectWidgetPlugin,
             ))
-            // .init_resource::<UiAssets>()
             .add_systems(Startup, (spawn_camera, register_widgets))
             .add_systems(Update, update_scrollable)
         };
@@ -65,7 +47,6 @@ fn register_widgets(
     register("slider");
     register("text_input");
     register("slider_input");
-    register("sim_image");
     register("settings_button");
     register("select");
     register("option");
@@ -84,12 +65,6 @@ fn register_widgets(
             });
         },
     );
-    html_funcs.register(
-        "init_sim_image",
-        |In(entity), mut settings: ResMut<SimSettings>| {
-            settings.parent_node = Some(entity);
-        },
-    )
 }
 
 #[derive(Event, Reflect, Debug)]

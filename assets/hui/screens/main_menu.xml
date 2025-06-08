@@ -8,7 +8,16 @@
         flex_direction="column"
         justify_content="space_between"
     >
-    <text font_size="48" font_color="#FFF">
+    <image
+            src="textures/bg1.png"
+            zindex="-100"
+            position="absolute"
+            top="0"
+            left="0"
+            width="100vw"
+            height="100vh"
+        />
+    <text font_size="48" font_color="#FFF" text_shadow="(2,2) #000">
         MARKOFF!
     </text>
     <node display="flex" flex_direction="column" align_items="center">

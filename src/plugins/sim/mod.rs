@@ -19,8 +19,7 @@ mod web;
 
 #[derive(Event)]
 pub struct StampEvent {
-    stamp: Handle<Stamp>,
-    position: UVec2,
+    pub position: Vec2,
 }
 
 #[derive(States, Default, Debug, PartialEq, Eq, Hash, Copy, Clone)]
@@ -189,7 +188,7 @@ fn init_images(
             depth_or_array_layers: 1,
         },
         TextureDimension::D2,
-        &[0, 0, 0, 255],
+        &[0, 0, 0, 0],
         format,
         asset_usage,
     );

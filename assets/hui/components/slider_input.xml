@@ -10,8 +10,8 @@
         border_color="#ffffff33"
         border="0 0 1px 0"
         display="flex"
-        padding="0 12px"
-        margin="0 8px"
+        padding="5px"
+        margin="0 5px"
         flex_direction="column"
         width="100%"
         tag:name="{name}"
@@ -23,21 +23,14 @@
         <node display="flex" flex_direction="row"> <!-- INPUTS -->
             <!-- input text -->
             <node display="flex" flex_direction="row" margin="5px" width="33%">
-                <button
-                    target="text_value"
-                    tag:filter="text"
-                    background="#333"
-                    border="2px"
-                    border_color="#555"
-                    active:border_color="#FFF"
-                >
+                <!-- <button target="text_value" tag:filter="text"> -->
                     <text
-                        id="text_value"
-                        tag:name="{text_name}"
-                        font_size="12px"
-                    >{default_value}</text>
+                    id="text_value"
+                    tag:name="{text_name}"
+                    font_size="12px"
+                >{default_value}</text>
                     <text font_size="12px">{unit}</text>
-                </button>
+                <!-- </button> -->
             </node>
             <!-- slider -->
             <node

@@ -6,6 +6,8 @@ pub mod select;
 use select::SelectWidgetPlugin;
 pub mod stamp_selector;
 use stamp_selector::StampSelectorWidgetPlugin;
+pub mod sim_image;
+use sim_image::SimImageWidgetPlugin;
 
 pub struct WidgetsPlugin;
 impl Plugin for WidgetsPlugin {
@@ -14,6 +16,7 @@ impl Plugin for WidgetsPlugin {
             SliderWidgetPlugin,
             SelectWidgetPlugin,
             StampSelectorWidgetPlugin,
+            SimImageWidgetPlugin,
         ));
     }
 }

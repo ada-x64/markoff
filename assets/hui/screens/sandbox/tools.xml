@@ -6,9 +6,11 @@
         display="flex"
         flex_direction="column"
         justify_content="space_between"
-        border="1px"
-        border_color="#000"
+        border="2px"
+        border_color="#999"
+        border_radius="5px"
         padding="8px"
+        background="#333a"
     >
     <node
             border_color="#ffffff33"
