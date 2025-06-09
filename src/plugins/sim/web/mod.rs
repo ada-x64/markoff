@@ -5,13 +5,9 @@ use std::sync::{Arc, Mutex, RwLock};
 use bevy::{prelude::*, tasks::ComputeTaskPool};
 
 use crate::sim::{
-    SimImages, SimSettings, SimSprite, SimState, spawn_sprite,
+    BLACK, PixelColor, SimImages, SimSettings, SimSprite, SimState, WHITE, spawn_sprite,
     types::{CellCondition, CellResult},
 };
-
-pub type PixelColor<'a> = &'a [u8; 4];
-const BLACK: PixelColor = &[0, 0, 0, 255];
-const WHITE: PixelColor = &[255, 255, 255, 255];
 
 #[derive(SystemSet, Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct SoftwareSimSet;
@@ -84,7 +80,7 @@ fn init(
                 .unwrap();
         }
     }
-    next.set(SimState::Running);
+    next.set(SimState::Paused);
 }
 
 fn draw(
