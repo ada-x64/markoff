@@ -49,7 +49,7 @@
                 name="sim_steps"
                 text_name="sim_steps_text"
                 slider_name="sim_steps_slider"
-                default_value="500"
+                default_value="10"
                 initial_position="0.5"
                 text="Steps per turn"
             />

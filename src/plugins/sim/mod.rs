@@ -21,14 +21,24 @@ impl Plugin for SimPlugin {
                         Team {
                             id: 0,
                             name: "A".into(),
-                            players: Vec::new(),
+                            players: vec![0],
                             color: [255, 0, 0, 255],
                         },
                         Team {
                             id: 1,
                             name: "B".into(),
-                            players: Vec::new(),
+                            players: vec![1],
                             color: [0, 0, 255, 255],
+                        },
+                    ],
+                    players: vec![
+                        Player {
+                            name: "Player 1".into(),
+                            team: 0,
+                        },
+                        Player {
+                            name: "Player 2".into(),
+                            team: 1,
                         },
                     ],
                     ..Default::default()

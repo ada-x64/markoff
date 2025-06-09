@@ -1,8 +1,10 @@
 use bevy::{prelude::*, render::extract_resource::ExtractResource};
 use derivative::Derivative;
 
-pub type TeamID = u8;
-pub type PlayerID = u8;
+/// Index into team vec
+pub type TeamID = usize;
+/// Index into player vec
+pub type PlayerID = usize;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Team {
@@ -13,7 +15,7 @@ pub struct Team {
 }
 #[derive(Clone, Debug, PartialEq)]
 pub struct Player {
-    pub id: PlayerID,
+    pub team: TeamID,
     pub name: String,
 }
 
@@ -91,6 +93,7 @@ pub enum SimState {
 pub struct SimGameplayState {
     pub current_stamp: Option<String>,
     pub num_steps: u32,
+    pub current_player: PlayerID,
 }
 
 // Intialized through the UI.
@@ -104,10 +107,19 @@ pub struct SimSettings {
     pub size: u32, // Must be a power of 2.
     #[derivative(Default(value = "10"))]
     pub timestep: u32, // fps
-    #[derivative(Default(value = "100"))]
+    #[derivative(Default(value = "10"))]
     pub steps_per_turn: u32,
     pub layout: SimLayout,
     pub use_compute: bool,
+}
+impl SimSettings {
+    pub fn get_player_color(&self, id: PlayerID) -> [u8; 4] {
+        self.teams
+            .iter()
+            .find(|team| team.players.contains(&id))
+            .expect("team")
+            .color
+    }
 }
 
 pub const DISPLAY_FACTOR: u32 = 1;

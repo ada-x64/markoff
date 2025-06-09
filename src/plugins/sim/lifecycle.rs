@@ -15,15 +15,59 @@ impl Plugin for SimLifecyclePlugin {
                 (init_images, spawn_sprite, populate, init_timestep).chain(),
             )
             .add_systems(OnEnter(SimState::Running), unpause)
-            .add_systems(OnEnter(SimState::Paused), pause)
+            .add_systems(OnEnter(SimState::Paused), (commit_state, pause))
             .add_systems(OnEnter(SimState::Closed), cleanup)
             .add_systems(FixedUpdate, update)
             .add_observer(on_stamp);
     }
 }
 
-fn update(mut gameplay: ResMut<SimGameplayState>) {
+fn commit_state(
+    sim_imgs: Res<SimImages>,
+    mut imgs: ResMut<Assets<Image>>,
+    node: Single<&ImageNode, With<SimImageNode>>,
+    settings: Res<SimSettings>,
+    mut gs: ResMut<SimGameplayState>,
+) {
+    let current_img = imgs.get_mut(&node.image).expect("current_img");
+    let color = settings.get_player_color(gs.current_player);
+    let size = current_img.size();
+    for x in 0..size.x {
+        for y in 0..size.y {
+            let data = current_img
+                .pixel_bytes_mut(UVec3::new(x, y, 0))
+                .expect("oob");
+            if data == WHITE {
+                data[0] = color[0];
+                data[1] = color[1];
+                data[2] = color[2];
+            }
+        }
+    }
+    let preview_image = imgs
+        .get_mut(&sim_imgs.preview_texture)
+        .expect("preview texture")
+        .clone();
+    imgs.get_mut(&sim_imgs.texture_a)
+        .expect("tex_a")
+        .clone_from(&preview_image);
+    imgs.get_mut(&sim_imgs.texture_b)
+        .expect("tex_b")
+        .clone_from(&preview_image);
+
+    gs.current_player = (gs.current_player + 1) % settings.players.len();
+}
+
+fn update(
+    mut gameplay: ResMut<SimGameplayState>,
+    settings: Res<SimSettings>,
+    mut state: ResMut<NextState<SimState>>,
+) {
     gameplay.num_steps += 1;
+    if gameplay.num_steps > settings.steps_per_turn {
+        gameplay.num_steps = 0;
+        state.set(SimState::Paused);
+    }
 }
 
 fn init_images(
@@ -149,11 +193,13 @@ fn pause(
     mut images: ResMut<Assets<Image>>,
 ) {
     time.pause();
-    let mut parent_node = settings
+    let parent_node = settings
         .parent_node
-        .and_then(|p| image_nodes.get_mut(p).ok())
-        .expect("parent handle");
-    let current_handle = parent_node.image.clone();
+        .and_then(|p| image_nodes.get_mut(p).ok());
+    let current_handle = parent_node
+        .as_ref()
+        .map_or(&sim_imgs.preview_texture, |n| &n.image)
+        .clone();
     let current_img = images.get(&current_handle).expect("current_img").clone();
     images
         .get_mut(&sim_imgs.texture_a)
@@ -168,7 +214,9 @@ fn pause(
         .expect("tex_p")
         .clone_from(&current_img);
 
-    parent_node.image = sim_imgs.preview_texture.clone();
+    if let Some(mut node) = parent_node {
+        node.image = sim_imgs.preview_texture.clone();
+    }
 }
 
 pub fn spawn_sprite(
