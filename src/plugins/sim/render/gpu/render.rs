@@ -3,6 +3,10 @@
 //! Largely inspired by the Game Of Life example.
 //! https://github.com/bevyengine/bevy/blob/main/examples/shader/compute_shader_game_of_life.rs
 
+use crate::sim::{
+    data::*,
+    render::gpu::{SimBindGroups, SimPipeline},
+};
 use bevy::{
     prelude::*,
     render::{
@@ -13,8 +17,6 @@ use bevy::{
         renderer::RenderContext,
     },
 };
-
-use crate::sim::native::{SHADER_ASSET_PATH, SIM_SIZE, SimBindGroups, SimPipeline, WORKGROUP_SIZE};
 
 #[derive(Debug, Hash, PartialEq, Eq, Clone, RenderLabel)]
 pub struct SimLabel;

@@ -18,7 +18,7 @@ use bevy::{
     },
 };
 
-use crate::sim::native::{SHADER_ASSET_PATH, SimImages};
+use crate::sim::data::*;
 
 #[derive(Resource)]
 pub struct SimPipeline {

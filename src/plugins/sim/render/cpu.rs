@@ -5,15 +5,15 @@ use std::sync::{Arc, Mutex, RwLock};
 use bevy::{prelude::*, tasks::ComputeTaskPool};
 
 use crate::sim::{
-    BLACK, PixelColor, SimImages, SimSettings, SimSprite, SimState, WHITE, spawn_sprite,
-    types::{CellCondition, CellResult},
+    BLACK, PixelColor, SimImages, SimSprite, SimState, WHITE,
+    data::{CellCondition, CellResult},
 };
 
 #[derive(SystemSet, Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct SoftwareSimSet;
 
-pub struct SoftwareSimPlugin;
-impl Plugin for SoftwareSimPlugin {
+pub struct CpuSimPlugin;
+impl Plugin for CpuSimPlugin {
     fn build(&self, app: &mut App) {
         let _ = {
             app.add_systems(
@@ -22,65 +22,8 @@ impl Plugin for SoftwareSimPlugin {
                     .run_if(in_state(SimState::Running))
                     .in_set(SoftwareSimSet),
             )
-            .add_systems(
-                OnEnter(SimState::Init),
-                init.after(spawn_sprite).in_set(SoftwareSimSet),
-            )
         };
     }
-}
-
-// populate
-fn init(
-    sprite: Single<&ImageNode, With<SimSprite>>,
-    mut images: ResMut<Assets<Image>>,
-    mut next: ResMut<NextState<SimState>>,
-    settings: Res<SimSettings>,
-) {
-    let img = images.get_mut(sprite.image.id()).unwrap();
-    let size = img.size();
-    for x in 0..size.x {
-        for y in 0..size.y {
-            let color = match settings.layout {
-                super::SimLayout::Random => {
-                    let len = settings.teams.len() + 2;
-                    let res = rand::random_range(0..len);
-                    match res {
-                        0 => WHITE,
-                        1 => BLACK,
-                        _ => &settings.teams[res - 2].color,
-                    }
-                }
-                // assumes 2 teams...
-                // 4 teams would have quadrants, etc
-                super::SimLayout::Horiz5050 => {
-                    if y < size.y / 2 {
-                        &settings.teams[0].color
-                    } else {
-                        &settings.teams[1].color
-                    }
-                }
-                super::SimLayout::Vert5050 => {
-                    if x < size.x / 2 {
-                        &settings.teams[0].color
-                    } else {
-                        &settings.teams[1].color
-                    }
-                }
-                super::SimLayout::Rand5050 => {
-                    if rand::random_bool(0.5) {
-                        &settings.teams[0].color
-                    } else {
-                        &settings.teams[1].color
-                    }
-                }
-                super::SimLayout::Empty => BLACK,
-            };
-            img.set_color_at(x, y, Color::srgb_u8(color[0], color[1], color[2]))
-                .unwrap();
-        }
-    }
-    next.set(SimState::Paused);
 }
 
 fn draw(
