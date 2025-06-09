@@ -10,11 +10,7 @@ use derivative::Derivative;
 
 use types::*;
 
-use crate::{
-    sim::web::SoftwareSimSet,
-    stamps::{Stamp, Stamps},
-    ui::widgets::sim_image::SimImageNode,
-};
+use crate::{sim::web::SoftwareSimSet, ui::widgets::sim_image::SimImageNode};
 // TODO: This is crashing!
 // But we have bigger fish to fry right now.
 // mod native;

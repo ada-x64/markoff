@@ -67,6 +67,7 @@ pub struct Stamps {
     pub px16: HashMap<String, Handle<Stamp>>,
     pub px32: HashMap<String, Handle<Stamp>>,
 }
+#[allow(unused)]
 impl Stamps {
     /// Square.
     pub fn stamp_size_from_sim_size(size: u32) -> u32 {

@@ -1,5 +1,5 @@
 use anyhow::anyhow;
-use bevy::{image::TextureAccessError::OutOfBounds, prelude::*, ui::RelativeCursorPosition};
+use bevy::{prelude::*, ui::RelativeCursorPosition};
 use bevy_hui::prelude::{HtmlComponents, HtmlFunctions};
 
 use crate::{
@@ -31,18 +31,9 @@ fn init_sim_image(
     settings.parent_node = Some(entity);
     commands
         .entity(entity)
-        .observe(
-            |trigger: Trigger<Pointer<Click>>,
-             mut commands: Commands,
-             cursor_pos: Query<&RelativeCursorPosition>| {
-                let position = cursor_pos
-                    .get(trigger.target)
-                    .expect("cursor_pos")
-                    .normalized
-                    .expect("outside????");
-                commands.trigger(StampEvent);
-            },
-        )
+        .observe(|_: Trigger<Pointer<Click>>, mut commands: Commands| {
+            commands.trigger(StampEvent);
+        })
         .insert((RelativeCursorPosition::default(), SimImageNode));
 }
 
