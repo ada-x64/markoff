@@ -17,7 +17,12 @@
             width="100vw"
             height="100vh"
         />
-    <text font_size="48" font_color="#FFF" text_shadow="(2,2) #000">
+    <text
+            font_size="48"
+            font_color="#FFF"
+            font="font/toxigenesis/toxigenesis bd.otf"
+            text_shadow="(2,2) #000"
+        >
         MARKOFF!
     </text>
     <node display="flex" flex_direction="column" align_items="center">
