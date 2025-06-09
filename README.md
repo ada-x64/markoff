@@ -1,5 +1,7 @@
 # MARKOFF
 
+![License: MIT or Apache 2.0](https://img.shields.io/badge/License-MIT%20or%20Apache2-blue.svg)]
+
 ## Description
 
 MARKOFF is a game about capturing territory using
