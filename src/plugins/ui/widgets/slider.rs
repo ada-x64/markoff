@@ -1,4 +1,7 @@
+use crate::ui::data::TemplateHandles;
+
 // From https://github.com/Lommix/bevy_hui/blob/0f7c1aff0563b823e62c6e3514a43cfb24d134e7/crates/bevy_hui_widgets/src/slider.rs
+use super::data::*;
 use bevy::prelude::*;
 use bevy_hui::prelude::*;
 
@@ -20,48 +23,15 @@ impl Plugin for SliderWidgetPlugin {
     }
 }
 
-#[derive(Event, Reflect)]
-#[reflect]
-pub struct SliderChangedEvent {
-    pub slider: Entity,
-    pub value: f32,
-}
-
-pub const TAG_AXIS: &str = "axis";
-
-#[derive(Default, Reflect)]
-#[reflect]
-pub enum SliderAxis {
-    #[default]
-    Horizontal,
-    Vertical,
-}
-
-impl From<&str> for SliderAxis {
-    fn from(value: &str) -> Self {
-        match value {
-            "y" => SliderAxis::Vertical,
-            _ => SliderAxis::Horizontal,
-        }
-    }
-}
-
-/// Slider Component holds the current value
-#[derive(Component, Reflect)]
-#[reflect]
-pub struct Slider {
-    pub value: f32,
-    axis: SliderAxis,
-}
-
-/// Slider Nob, which represent the button
-#[derive(Component, Reflect)]
-#[reflect]
-pub struct SliderNob {
-    slider: Entity,
-}
-
-fn setup(mut html_funcs: HtmlFunctions) {
+fn setup(
+    mut html_funcs: HtmlFunctions,
+    mut comps: HtmlComponents,
+    mut templates: ResMut<TemplateHandles>,
+    server: Res<AssetServer>,
+) {
+    let handle = server.load("hui/widgets/slider.xml");
+    comps.register("slider", handle.clone());
+    templates.insert("slider", handle.clone());
     html_funcs.register("init_slider", init_slider);
 }
 
@@ -111,6 +81,7 @@ fn update_drag(
     mut nobs: Query<(Entity, &SliderNob, &mut HtmlStyle, &Interaction)>,
     sliders: Query<&Slider>,
     computed_nodes: Query<&ComputedNode>,
+    mut commands: Commands,
 ) {
     for event in events.read() {
         nobs.iter_mut()
@@ -146,10 +117,12 @@ fn update_drag(
 
                         let slider_value = next_pos / max_pos;
                         style.computed.node.left = Val::Px(next_pos);
-                        slider_events.write(SliderChangedEvent {
+                        let event = SliderChangedEvent {
                             slider: nob.slider,
                             value: slider_value,
-                        });
+                        };
+                        slider_events.write(event);
+                        commands.trigger(event);
                     }
                     SliderAxis::Vertical => {
                         let current_pos = match style.computed.node.bottom {

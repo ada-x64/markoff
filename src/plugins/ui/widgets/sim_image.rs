@@ -5,6 +5,7 @@ use bevy_hui::prelude::{HtmlComponents, HtmlFunctions};
 use crate::{
     sim::{SimGameplayState, SimImages, SimSettings, SimState, StampEvent},
     stamps::{Stamp, Stamps},
+    ui::data::TemplateHandles,
 };
 
 #[derive(Component, Debug, Copy, Clone)]
@@ -18,8 +19,15 @@ impl Plugin for SimImageWidgetPlugin {
     }
 }
 
-fn init(mut components: HtmlComponents, mut funcs: HtmlFunctions, server: Res<AssetServer>) {
-    components.register("sim_image", server.load("hui/components/sim_image.xml"));
+fn init(
+    mut components: HtmlComponents,
+    mut funcs: HtmlFunctions,
+    server: Res<AssetServer>,
+    mut handles: ResMut<TemplateHandles>,
+) {
+    let handle = server.load("hui/widgets/sim_image.xml");
+    handles.insert("sim_image", handle.clone());
+    components.register("sim_image", handle);
     funcs.register("init_sim_image", init_sim_image);
 }
 

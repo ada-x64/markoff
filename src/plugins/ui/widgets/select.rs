@@ -1,6 +1,11 @@
 use bevy::prelude::*;
 use bevy_hui::prelude::*;
 
+use crate::ui::{
+    data::TemplateHandles,
+    widgets::data::{SelectInput, SelectOption, SelectionChangedEvent},
+};
+
 /// # Select Widget
 ///
 /// A select is a button with 2 children. The current
@@ -25,28 +30,15 @@ impl Plugin for SelectWidgetPlugin {
     }
 }
 
-#[derive(Component, Default, Reflect, Debug)]
-#[reflect]
-pub struct SelectInput {
-    // points to the current select node
-    pub value: String,
-}
-
-#[derive(Component, Debug, Reflect)]
-#[reflect]
-pub struct SelectOption {
-    select: Entity,
-}
-
-#[derive(Event, Reflect, Debug, Clone)]
-#[reflect]
-pub struct SelectionChangedEvent {
-    pub select: Entity,
-    pub option: Entity,
-    pub value: String,
-}
-
-fn setup(mut html_funcs: HtmlFunctions) {
+fn setup(
+    mut html_funcs: HtmlFunctions,
+    mut html_comps: HtmlComponents,
+    mut handles: ResMut<TemplateHandles>,
+    server: Res<AssetServer>,
+) {
+    let handle = server.load("hui/widgets/select.xml");
+    html_comps.register("select", handle.clone());
+    handles.insert("select", handle);
     html_funcs.register("init_select", init_select);
 }
 
@@ -63,8 +55,11 @@ fn init_select(
         return;
     };
 
+    info!("option_holder={option_holder:?}");
+
     _ = children.get(**option_holder).map(|children| {
         children.iter().for_each(|option| {
+            info!("adding option component to {entity:?}");
             cmd.entity(option).insert(SelectOption { select: entity });
         });
     });
@@ -94,6 +89,9 @@ fn selection(
     mut styles: Query<&mut HtmlStyle>,
 ) {
     for (entity, parent, interaction, option) in options.iter() {
+        info!(
+            "selection entity={entity:?} parent={parent:?} interaction={interaction:?} option={option:?}"
+        );
         if !matches!(interaction, Interaction::Pressed) {
             continue;
         }
@@ -115,6 +113,7 @@ fn selection(
 
         events.write(event.clone());
         commands.trigger(event);
+        info!("Triggered selection event");
 
         // close the list
         _ = styles.get_mut(parent.parent()).map(|mut style| {

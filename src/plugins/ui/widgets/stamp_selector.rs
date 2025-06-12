@@ -4,7 +4,7 @@ use bevy_hui::prelude::*;
 use crate::{
     sim::SimGameplayState,
     stamps::{Stamp, Stamps},
-    ui::Scrollable,
+    ui::widgets::Scrollable,
 };
 
 pub struct StampSelectorWidgetPlugin;
@@ -15,7 +15,15 @@ impl Plugin for StampSelectorWidgetPlugin {
         // .add_observer(change_stamp_img);
     }
 }
-fn init(mut funcs: HtmlFunctions) {
+// TODO: Could probably make this an xml template
+fn init(
+    mut funcs: HtmlFunctions,
+    // mut components: HtmlComponents,
+    // mut handles: ResMut<TemplateHandles>,
+    // server: Res<AssetServer>,
+) {
+    // server.load("hui/widgets/")
+    // components.register(name, template);
     funcs.register("init_stamp_selector", init_stamp_selector);
 }
 

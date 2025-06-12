@@ -25,9 +25,10 @@ derivative = "2.2.0"
 thiserror = "2.0.12"
 anyhow = "1.0.98"
 bevy-inspector-egui = { version = "0.31.0", optional = true }
+tiny_bail = "0.4.3"
 
 [features]
-default = ["dev"]
+default = []
 dev = ["bevy/bevy_dev_tools", "bevy-inspector-egui"]
 dev_native = ["dev", "native", "bevy/dynamic_linking", "bevy_dylib"]
 dev_web = ["dev", 'web']

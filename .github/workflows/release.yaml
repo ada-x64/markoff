@@ -117,7 +117,6 @@ jobs:
             targets: wasm32-unknown-unknown
             package_ext: .zip
             runner: ubuntu-latest
-            features: web
 
           - platform: linux
             targets: x86_64-unknown-linux-gnu
@@ -210,7 +209,7 @@ jobs:
         run: |
           cargo binstall --locked --no-confirm --force wasm-bindgen-cli
           cargo binstall --locked --no-confirm --force wasm-opt
-          bevy build --locked --release --features='${{ matrix.features }}' --yes web --bundle
+          bevy build --locked --release --features='web getrandom/wasm_js' --yes web --bundle
           mv 'target/bevy_web/web-release/${{ env.cargo_build_binary_name }}' '${{ env.app }}'
 
       - name: Build and add binaries to app (non-Web)

@@ -4,9 +4,9 @@ use bevy_hui::prelude::*;
 use crate::{
     sim::{SimLayout, SimSettings, SimState},
     ui::{
-        Slider, SliderChangedEvent,
-        screens::{CurrentScreen, ScreenMarker},
-        widgets::select::{SelectInput, SelectionChangedEvent},
+        Slider,
+        screens::{CurrentScreen, ScreenRoot},
+        widgets::data::{SelectInput, SelectionChangedEvent, SliderChangedEvent},
     },
 };
 
@@ -21,10 +21,7 @@ impl Plugin for SandboxScreenPlugin {
 }
 
 fn render(mut commands: Commands, server: Res<AssetServer>) {
-    commands.spawn((
-        ScreenMarker,
-        HtmlNode(server.load("hui/screens/sandbox.xml")),
-    ));
+    commands.spawn((ScreenRoot, HtmlNode(server.load("hui/screens/sandbox.xml"))));
 }
 
 fn register(
@@ -104,6 +101,7 @@ fn on_select_change(
                 return;
             };
             settings.layout = layout;
+            info!("settings.layout = {}", settings.layout);
         }
         _ => {
             warn!("Unknown select: {name}")
@@ -117,7 +115,7 @@ fn on_slider_input_change(
     mut settings: ResMut<SimSettings>,
     mut texts: Query<&mut Text>,
 ) {
-    let Ok((slider, target, tags)) = sliders.get(trigger.slider_entity) else {
+    let Ok((slider, target, tags)) = sliders.get(trigger.slider) else {
         warn!("Could not get slider! Trigger: {trigger:?}");
         return;
     };

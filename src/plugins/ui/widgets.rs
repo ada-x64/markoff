@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 
+pub mod data;
+pub use data::*;
 pub mod slider;
 use slider::SliderWidgetPlugin;
 pub mod select;
@@ -8,6 +10,8 @@ pub mod stamp_selector;
 use stamp_selector::StampSelectorWidgetPlugin;
 pub mod sim_image;
 use sim_image::SimImageWidgetPlugin;
+pub mod scrollable;
+pub use scrollable::*;
 
 pub struct WidgetsPlugin;
 impl Plugin for WidgetsPlugin {
@@ -17,6 +21,7 @@ impl Plugin for WidgetsPlugin {
             SelectWidgetPlugin,
             StampSelectorWidgetPlugin,
             SimImageWidgetPlugin,
+            ScrollableWidgetPlugin,
         ));
     }
 }

@@ -5,7 +5,7 @@ use bevy::{
 };
 use bevy_inspector_egui::bevy_egui::EguiPlugin;
 
-use crate::{sim::SimState, ui::screens::CurrentScreen};
+use crate::{sim::SimState, ui::data::CurrentScreen};
 
 // #[derive(Event)]
 // pub struct RestartEvent;

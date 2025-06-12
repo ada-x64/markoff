@@ -7,7 +7,7 @@
         },
         "check": {
           "targets": ["wasm32-unknown-unknown", "x86_64-unknown-linux-gnu"],
-          "features": ["dev_native"],
+          "features": ["dev"],
           // "features": ["dev_web"],
           "overrideCommand": ["cargo", "clippy", "--message-format=json"]
         },

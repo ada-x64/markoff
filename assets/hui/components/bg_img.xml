@@ -1,0 +1,12 @@
+<template>
+    <property name="img_src" />
+    <image
+        src="{img_src}"
+        zindex="-100"
+        position="absolute"
+        top="0"
+        left="0"
+        width="100vw"
+        height="100vh"
+    />
+</template>

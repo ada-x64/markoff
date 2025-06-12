@@ -2,10 +2,7 @@ use bevy::prelude::*;
 
 pub use data::*;
 
-use crate::sim::{
-    lifecycle::SimLifecyclePlugin,
-    render::{cpu::CpuSimPlugin, gpu::GpuSimPlugin},
-};
+use crate::sim::{lifecycle::SimLifecyclePlugin, render::cpu::CpuSimPlugin};
 
 mod data;
 mod lifecycle;
@@ -15,7 +12,11 @@ pub struct SimPlugin;
 impl Plugin for SimPlugin {
     fn build(&self, app: &mut App) {
         let _ = {
-            app.add_plugins((CpuSimPlugin, GpuSimPlugin, SimLifecyclePlugin))
+            #[cfg(not(target_arch = "wasm32"))]
+            {
+                app.add_plugins(crate::sim::render::gpu::GpuSimPlugin);
+            }
+            app.add_plugins((CpuSimPlugin, SimLifecyclePlugin))
                 .insert_resource(SimSettings {
                     teams: vec![
                         Team {
