@@ -884,16 +884,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "bevy_hui_widgets"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a2f866d90d5ac5a04ced2d564f13726669aef3ad6c8c2e8b8920e9fb258b030c"
-dependencies = [
- "bevy",
- "bevy_hui",
-]
-
-[[package]]
 name = "bevy_image"
 version = "0.16.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3384,7 +3374,6 @@ dependencies = [
  "bevy-inspector-egui",
  "bevy_dylib",
  "bevy_hui",
- "bevy_hui_widgets",
  "bevy_simple_subsecond_system",
  "derivative",
  "getrandom 0.3.3",

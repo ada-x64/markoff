@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy_hui::prelude::*;
+use tiny_bail::prelude::*;
 
 use crate::{
     sim::{SimLayout, SimSettings, SimState},
@@ -55,14 +56,8 @@ fn register(
     html_funcs.register(
         "on_select_layout",
         |In(entity), selects: Query<&SelectInput>, mut settings: ResMut<SimSettings>| {
-            let Ok(select) = selects.get(entity) else {
-                warn!("Could not get select {entity}");
-                return;
-            };
-            let Ok(layout) = SimLayout::try_from(&select.value) else {
-                warn!("Unknown layout {}", select.value);
-                return;
-            };
+            let select = r!(selects.get(entity));
+            let layout = r!(SimLayout::try_from(&select.value));
             settings.layout = layout;
         },
     );
@@ -82,24 +77,12 @@ fn on_select_change(
 ) {
     info!("on-select-change");
     let event = trigger.event();
-    let Some(select) = selects.get(event.select).ok() else {
-        warn!("couldnt' get select");
-        return;
-    };
-    let Some(name) = tags
-        .get(event.select)
-        .ok()
-        .and_then(|tags| tags.get("name"))
-    else {
-        warn!("Couldn't get tags");
-        return;
-    };
+    let select = r!(selects.get(event.select));
+    let tags = r!(tags.get(event.select));
+    let name = r!(tags.get("name").ok_or("tag 'name' not found"));
     match name.as_str() {
         "layout_select" => {
-            let Ok(layout) = SimLayout::try_from(&select.value) else {
-                warn!("Unknown layout {}", select.value);
-                return;
-            };
+            let layout = r!(SimLayout::try_from(&select.value));
             settings.layout = layout;
             info!("settings.layout = {}", settings.layout);
         }
@@ -115,18 +98,9 @@ fn on_slider_input_change(
     mut settings: ResMut<SimSettings>,
     mut texts: Query<&mut Text>,
 ) {
-    let Ok((slider, target, tags)) = sliders.get(trigger.slider) else {
-        warn!("Could not get slider! Trigger: {trigger:?}");
-        return;
-    };
-    let Ok(mut text) = texts.get_mut(target.0) else {
-        warn!("Could not get text from entity {target:?}\nTrigger: {trigger:?}");
-        return;
-    };
-    let Some(name) = tags.get("name") else {
-        warn!("Missing name tag");
-        return;
-    };
+    let (slider, target, tags) = r!(sliders.get(trigger.slider));
+    let mut text = r!(texts.get_mut(target.0));
+    let name = r!(tags.get("name").ok_or("tag 'name' not found"));
     match name.as_str() {
         "sim_size_slider" => {
             let value = u32::pow(2, (5. + slider.value * 4.).round() as u32);

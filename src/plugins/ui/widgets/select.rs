@@ -48,6 +48,7 @@ fn init_select(
     children: Query<&Children>,
     targets: Query<&UiTarget>,
 ) {
+    info!("init_select");
     cmd.entity(entity).insert(SelectInput::default());
 
     let Ok(option_holder) = targets.get(entity) else {
