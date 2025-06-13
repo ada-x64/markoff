@@ -3,6 +3,7 @@ pub mod data;
 pub mod screens;
 pub mod widgets;
 
+use bevy_flair::{FlairPlugin, style::components::NodeStyleSheet};
 use bevy_hui::{HuiPlugin, prelude::HuiAutoLoadPlugin};
 use screens::*;
 
@@ -20,15 +21,27 @@ impl Plugin for UiPlugin {
                 // "widgets" require custom logic and must be initialized manually
                 HuiPlugin,
                 HuiAutoLoadPlugin::new(&["hui/components"]),
+                FlairPlugin,
                 ScreensPlugin,
                 WidgetsPlugin,
             ))
             .init_resource::<TemplateHandles>()
-            .add_systems(Startup, spawn_camera)
+            .add_systems(Startup, (spawn_camera, spawn_root_node))
         };
     }
 }
 
 fn spawn_camera(mut commands: Commands) {
     commands.spawn((Camera2d, UiPickingCamera));
+}
+
+#[derive(Component, Default, Debug)]
+pub struct RootNode;
+
+fn spawn_root_node(mut commands: Commands, assets: Res<AssetServer>) {
+    commands.spawn((
+        RootNode,
+        Node::default(),
+        NodeStyleSheet::StyleSheet(assets.load("hui/styles/root.css")),
+    ));
 }

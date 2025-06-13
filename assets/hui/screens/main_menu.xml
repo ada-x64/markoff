@@ -1,5 +1,6 @@
 <template>
 <node
+        id="main_menu"
         display="flex"
         align_items="center"
         width="100vw"
@@ -8,15 +9,6 @@
         flex_direction="column"
         justify_content="space_between"
     >
-    <!-- <image
-            src="textures/bg1.png"
-            zindex="-100"
-            position="absolute"
-            top="0"
-            left="0"
-            width="100vw"
-            height="100vh"
-        /> -->
     <bg_img img_src="textures/bg1.png" />
     <text
             font_size="48"
@@ -27,7 +19,10 @@
         MARKOFF!
     </text>
     <node display="flex" flex_direction="column" align_items="center">
-        <!-- <menu_button text="Start game!" on_press="goto_game_settings" /> -->
+    <button tag:class="main-menu">
+        <text>Start game!</text>
+    </button>
+    <!-- <menu_button text="Start game!" on_press="goto_game_settings" /> -->
         <menu_button text="Sandbox" on_press="goto_sandbox" />
         <menu_button text="Credits" />
     </node>

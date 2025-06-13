@@ -1,7 +1,11 @@
 use bevy::prelude::*;
+use bevy_flair::style::components::NodeStyleSheet;
 use bevy_hui::prelude::*;
 
-use crate::ui::screens::{CurrentScreen, ScreenRoot};
+use crate::ui::{
+    RootNode,
+    screens::{CurrentScreen, ScreenRoot},
+};
 
 pub struct MainMenuScreenPlugin;
 impl Plugin for MainMenuScreenPlugin {
@@ -11,11 +15,12 @@ impl Plugin for MainMenuScreenPlugin {
     }
 }
 
-fn render(mut commands: Commands, server: Res<AssetServer>) {
+fn render(mut commands: Commands, server: Res<AssetServer>, root: Single<Entity, With<RootNode>>) {
     info!("main menu");
-    commands.spawn((
+    commands.entity(*root).with_child((
         ScreenRoot,
         HtmlNode(server.load("hui/screens/main_menu.xml")),
+        NodeStyleSheet::StyleSheet(server.load("hui/styles/main_menu.css")),
     ));
 }
 

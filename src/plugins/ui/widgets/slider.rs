@@ -12,7 +12,7 @@ impl Plugin for SliderWidgetPlugin {
         app.register_type::<Slider>();
         app.register_type::<SliderChangedEvent>();
         app.add_event::<SliderChangedEvent>();
-        app.add_systems(PreStartup, setup);
+        app.add_systems(Startup, setup);
         app.add_systems(
             Update,
             (

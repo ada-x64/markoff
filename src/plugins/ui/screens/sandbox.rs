@@ -5,7 +5,7 @@ use tiny_bail::prelude::*;
 use crate::{
     sim::{SimLayout, SimSettings, SimState},
     ui::{
-        Slider,
+        RootNode, Slider,
         screens::{CurrentScreen, ScreenRoot},
         widgets::data::{SelectInput, SelectionChangedEvent, SliderChangedEvent},
     },
@@ -21,8 +21,10 @@ impl Plugin for SandboxScreenPlugin {
     }
 }
 
-fn render(mut commands: Commands, server: Res<AssetServer>) {
-    commands.spawn((ScreenRoot, HtmlNode(server.load("hui/screens/sandbox.xml"))));
+fn render(mut commands: Commands, server: Res<AssetServer>, root: Single<Entity, With<RootNode>>) {
+    commands
+        .entity(*root)
+        .with_child((ScreenRoot, HtmlNode(server.load("hui/screens/sandbox.xml"))));
 }
 
 fn register(

@@ -10,6 +10,9 @@ use crate::ui::{data::ScreenRoot, screens::CurrentScreen};
 #[derive(Resource, Debug, Deref, DerefMut)]
 pub struct SplashTimer(Timer);
 
+#[cfg(feature = "dev")]
+const SPLASH_SECS: f32 = 0.;
+#[cfg(not(feature = "dev"))]
 const SPLASH_SECS: f32 = 2.;
 
 pub struct InitScreenPlugin;
