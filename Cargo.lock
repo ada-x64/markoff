@@ -795,8 +795,7 @@ dependencies = [
 [[package]]
 name = "bevy_flair"
 version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3bc15a3393c2326893b3a0a000ba22b77a75d2e358f2574eb6b41d72b83144cd"
+source = "git+https://github.com/ada-x64/bevy_flair?branch=fix-pre-startup-crash#6b0cb3770260d49a97cb71deae578059b9fc069b"
 dependencies = [
  "bevy_app",
  "bevy_asset",
@@ -809,8 +808,7 @@ dependencies = [
 [[package]]
 name = "bevy_flair_core"
 version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b93c4567884a971025140882ec0dba82866d4593532378bbd98fd865aaffd481"
+source = "git+https://github.com/ada-x64/bevy_flair?branch=fix-pre-startup-crash#6b0cb3770260d49a97cb71deae578059b9fc069b"
 dependencies = [
  "bevy_app",
  "bevy_color",
@@ -829,8 +827,7 @@ dependencies = [
 [[package]]
 name = "bevy_flair_css_parser"
 version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b8a3f014835e3213fadfc93a9365a8d065c8f9a737b8b9727e25b40336ea19e"
+source = "git+https://github.com/ada-x64/bevy_flair?branch=fix-pre-startup-crash#6b0cb3770260d49a97cb71deae578059b9fc069b"
 dependencies = [
  "ariadne",
  "bevy_app",
@@ -859,8 +856,7 @@ dependencies = [
 [[package]]
 name = "bevy_flair_style"
 version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7c49547931f2420d1f2b990db80e4a86c40dfc25cc906b46964df7740eddac1b"
+source = "git+https://github.com/ada-x64/bevy_flair?branch=fix-pre-startup-crash#6b0cb3770260d49a97cb71deae578059b9fc069b"
 dependencies = [
  "bevy_app",
  "bevy_asset",

@@ -1,2 +1,13 @@
-#main_menu {
+@import "hui/styles/fonts.css";
+
+@font-face {
+    font-family: "Toxigenesis";
+    src: url("font/toxigenesis/toxigenesis bd.otf");
+}
+
+.title {
+    font-family: "Toxigenesis";
+    font-size: 48px;
+    color: #fff;
+    text-shadow: 2px 2px #000;
 }

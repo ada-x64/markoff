@@ -1,2 +1,7 @@
-/* Global styles */
 @import "hui/styles/tailwind-colors.css";
+@import "hui/styles/fonts.css";
+
+root {
+    font-family: "Monofonto";
+    font-size: 12px;
+}

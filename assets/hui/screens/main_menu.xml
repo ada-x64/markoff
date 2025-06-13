@@ -1,6 +1,6 @@
 <template>
 <node
-        id="main_menu"
+        tag:class="main_menu"
         display="flex"
         align_items="center"
         width="100vw"
@@ -11,6 +11,7 @@
     >
     <bg_img img_src="textures/bg1.png" />
     <text
+            id="title"
             font_size="48"
             font_color="#FFF"
             font="font/toxigenesis/toxigenesis bd.otf"

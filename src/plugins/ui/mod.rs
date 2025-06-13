@@ -4,7 +4,10 @@ pub mod screens;
 pub mod widgets;
 
 use bevy_flair::{FlairPlugin, style::components::NodeStyleSheet};
-use bevy_hui::{HuiPlugin, prelude::HuiAutoLoadPlugin};
+use bevy_hui::{
+    HuiPlugin,
+    prelude::{CompileContextEvent, HuiAutoLoadPlugin, Tags},
+};
 use screens::*;
 
 use crate::ui::{
@@ -27,6 +30,7 @@ impl Plugin for UiPlugin {
             ))
             .init_resource::<TemplateHandles>()
             .add_systems(Startup, (spawn_camera, spawn_root_node))
+            .add_observer(set_styles)
         };
     }
 }
@@ -45,3 +49,10 @@ fn spawn_root_node(mut commands: Commands, assets: Res<AssetServer>) {
         NodeStyleSheet::StyleSheet(assets.load("hui/styles/root.css")),
     ));
 }
+
+// goal: Whenever the HTML is recompiled or populated,
+// we need to go through and parse tags so that we can integrate with
+// bevy_flair. tag:id and tag:class should correlate to the Name and ClassList
+// components, respectively.
+// issue: CompileContextEvent is triggered locally, doesn't bubble up
+fn set_styles(trigger: Trigger<CompileContextEvent>, tags: Query<&Tags>) {}

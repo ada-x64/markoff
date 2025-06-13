@@ -1,0 +1,13 @@
+// Static tasks configuration.
+//
+// Example:
+[
+  {
+    "label": "just run",
+    "command": "just run"
+  },
+  {
+    "label": "just web",
+    "command": "just web"
+  }
+]
